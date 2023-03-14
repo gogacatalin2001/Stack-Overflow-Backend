@@ -3,6 +3,7 @@ package dev.stackoverflow.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.Hibernate;
+
 import java.util.Objects;
 
 @Getter
@@ -13,8 +14,9 @@ import java.util.Objects;
 @Entity
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @NonNull
+    @Column(name = "user_id", nullable = false, unique = true)
     private Long id;
     @NonNull
     @Column(name = "first_name", columnDefinition = "varchar(50) default 'FirstName'", nullable = false)
@@ -26,6 +28,9 @@ public class User {
     @Column(name = "email", columnDefinition = "varchar(50) default 'defaultemail@provider.com'", nullable = false, unique = true)
     private String email;
     @NonNull
+    @Column(name = "password", columnDefinition = "varchar(50) default 'password'", nullable = false)
+    private String password;
+    @NonNull
     @Column(name = "phone_number", columnDefinition = "varchar(50) default '0000000000'", nullable = false, unique = true)
     private String phoneNumber;
     @NonNull
@@ -33,10 +38,10 @@ public class User {
     private int score;
     @NonNull
     @Column(name = "banned", columnDefinition = "bit(1) default false", nullable = false)
-    boolean banned;
+    private boolean banned;
     @NonNull
     @Column(name = "moderator", columnDefinition = "bit(1) default false", nullable = false)
-    boolean moderator;
+    private boolean moderator;
 
     @Override
     public boolean equals(Object o) {
