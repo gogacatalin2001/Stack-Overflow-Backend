@@ -1,25 +1,26 @@
 package dev.stackoverflow.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
+import jakarta.persistence.*;
+import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
-@AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
-public class Question {
-    @Id
-    private Long id;
+@AllArgsConstructor
+@Entity
+@Table(name = "question")
+public class Question extends Post {
+
+    @NonNull
+    @Column(name = "title", columnDefinition = "varchar(200) default 'Question Title'", nullable = false)
     private String title;
-    private String text;
-    // TODO add an image
-    private User author;
-    private LocalDateTime creationDateTime;
+    @NonNull
+    @ManyToMany
     private List<Tag> tags;
-    private List<Answer> answerIds;
-    private int voteNumber;
+    @OneToMany
+    private List<Answer> answers;
+
+
 }

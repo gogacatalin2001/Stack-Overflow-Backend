@@ -1,16 +1,13 @@
 package dev.stackoverflow.model;
 
+import jakarta.persistence.*;
+import lombok.*;
 
-import org.springframework.data.annotation.Id;
+@Getter
+@Setter
+@ToString
+@Entity
+@Table(name = "answer")
+public class Answer extends Post {
 
-import java.util.Date;
-
-
-public class Answer {
-    @Id
-    private Long id;
-    private String text;
-    private User author;
-    private Date creationDate;
-    private int voteNumber;
 }

@@ -4,20 +4,23 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.Hibernate;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Getter
 @Setter
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Table(name = "user")
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @NonNull
     @Column(name = "user_id", nullable = false, unique = true)
-    private Long id;
+    private Long userId;
     @NonNull
     @Column(name = "first_name", columnDefinition = "varchar(50) default 'FirstName'", nullable = false)
     private String firstName;
@@ -42,13 +45,31 @@ public class User {
     @NonNull
     @Column(name = "moderator", columnDefinition = "bit(1) default false", nullable = false)
     private boolean moderator;
+    @OneToMany(
+            mappedBy = "author",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Post> posts;
+
+    public User(@NonNull Long userId, @NonNull String firstName, @NonNull String lastName, @NonNull String email, @NonNull String password, @NonNull String phoneNumber, @NonNull int score, @NonNull boolean banned, @NonNull boolean moderator) {
+        this.userId = userId;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.phoneNumber = phoneNumber;
+        this.score = score;
+        this.banned = banned;
+        this.moderator = moderator;
+    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
         User user = (User) o;
-        return Objects.equals(getId(), user.getId());
+        return Objects.equals(getUserId(), user.getUserId());
     }
 
     @Override

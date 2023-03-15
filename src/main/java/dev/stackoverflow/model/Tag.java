@@ -1,19 +1,36 @@
 package dev.stackoverflow.model;
 
-import java.util.Objects;
+import jakarta.persistence.*;
+import lombok.*;
 
-public record Tag(String tag) {
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "tag")
+public class Tag{
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @NonNull
+    @Column(name = "tag_id", nullable = false, unique = true)
+    private  Long tagId;
+    @NonNull
+    @Column(name = "text",columnDefinition = "varchar(50) default '#tag'", nullable = false, unique = true)
+    private String text;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Tag tag1 = (Tag) o;
-        return tag().equals(tag1.tag());
+        Tag tag = (Tag) o;
+        return getTagId().equals(tag.getTagId()) && getText().equals(tag.getText());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(tag());
+        return getClass().hashCode();
     }
 }
