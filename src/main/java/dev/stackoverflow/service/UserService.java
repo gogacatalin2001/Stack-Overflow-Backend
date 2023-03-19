@@ -1,5 +1,6 @@
 package dev.stackoverflow.service;
 
+import dev.stackoverflow.exception.UserNotFoundException;
 import dev.stackoverflow.model.User;
 import dev.stackoverflow.repository.UserRepository;
 import lombok.NonNull;
@@ -15,17 +16,21 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public List<User> getAll() {
+    public List<User> getUsers() {
         return userRepository.findAll();
     }
 
-    public User getUserById(@NonNull Long id) {
+    public User getUser(@NonNull Long id) {
         Optional<User> user = userRepository.findById(id);
         return user.orElse(null);
     }
 
-    public void saveUsers(@NonNull List<User> users) {
-        userRepository.saveAll(users);
+    public User saveUser(@NonNull User user) {
+        return userRepository.save(user);
+    }
+
+    public List<User> saveUsers(@NonNull List<User> users) {
+        return userRepository.saveAll(users);
     }
 
     public User updateUser(@NonNull User user, @NonNull Long id) {
@@ -39,7 +44,9 @@ public class UserService {
                     user.getPhoneNumber(),
                     user.getScore(),
                     user.isBanned(),
-                    user.isModerator()
+                    user.isModerator(),
+                    user.getQuestions(),
+                    user.getAnswers()
             );
             return userRepository.save(newUser);
         } else {
@@ -47,7 +54,12 @@ public class UserService {
         }
     }
 
-    public void deleteUserById(@NonNull Long id) {
-        userRepository.deleteById(id);
+    public void deleteUser(@NonNull Long id) {
+        Optional<User> user = userRepository.findById(id);
+        if (user.isPresent()) {
+            userRepository.deleteById(id);
+        } else {
+            throw new UserNotFoundException(id);
+        }
     }
 }

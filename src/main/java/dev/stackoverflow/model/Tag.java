@@ -6,20 +6,29 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "tag")
 public class Tag{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NonNull
-    @Column(name = "tag_id", nullable = false, unique = true)
+    @Column
     private  Long tagId;
-    @NonNull
-    @Column(name = "text",columnDefinition = "varchar(50) default '#tag'", nullable = false, unique = true)
+    @Column
     private String text;
+
+
+    public Tag() {
+    }
+
+    public Tag(String text) {
+        this.text = text;
+    }
+
+    public Tag(Long tagId, String text) {
+        this.tagId = tagId;
+        this.text = text;
+    }
 
     @Override
     public boolean equals(Object o) {

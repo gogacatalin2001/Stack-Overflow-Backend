@@ -4,10 +4,11 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "post")
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -15,24 +16,52 @@ public abstract class Post {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NonNull
-    @Column(name = "id", nullable = false, unique = true)
-    private Long id;
+    @Column
+    protected Long id;
     //private User author;
-    @NonNull
-    @Column(name = "text", columnDefinition = "varchar(500) default 'no text'", nullable = false)
-    private String text;
+    @Column
+    protected String text;
 
     // TODO add picture
 
-    @NonNull
-    @Column(name = "creation_date_time", nullable = false)
-    private LocalDateTime creationDateTime;
-    @NonNull
-    @Column(name = "vote_count", columnDefinition = "int default 0", nullable = false)
-    private int voteCount;
-    @NonNull
+    @Column
+    protected LocalDateTime creationDateTime;
+    @Column
+    protected int voteCount;
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User author;
+    protected User author;
+
+    public Post() {
+    }
+
+    public Post(String text, int voteCount, User author) {
+        this.text = text;
+        this.creationDateTime = LocalDateTime.now();
+        this.voteCount = voteCount;
+        this.author = author;
+    }
+
+    public Post(Long id, String text, int voteCount, User author) {
+        this.id = id;
+        this.text = text;
+        this.creationDateTime = LocalDateTime.now();
+        this.voteCount = voteCount;
+        this.author = author;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Post post = (Post) o;
+        return voteCount == post.voteCount && id.equals(post.id) && text.equals(post.text) && creationDateTime.equals(post.creationDateTime) && author.equals(post.author);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, text, creationDateTime, voteCount, author);
+    }
 }
+
+
