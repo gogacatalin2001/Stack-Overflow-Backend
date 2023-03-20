@@ -35,13 +35,13 @@ public class User {
     @Column(name = "moderator", columnDefinition = "bit(1) default false", nullable = false)
     private boolean moderator;
     @OneToMany(
-            mappedBy = "author",
+            mappedBy = "user",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
     private List<Question> questions = new ArrayList<>();
     @OneToMany(
-            mappedBy = "author",
+            mappedBy = "user",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )

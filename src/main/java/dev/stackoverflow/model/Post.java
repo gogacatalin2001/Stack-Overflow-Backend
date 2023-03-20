@@ -18,36 +18,39 @@ public abstract class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
     protected Long id;
-    //private User author;
+    //private User user;
     @Column
     protected String text;
 
-    // TODO add picture
+    @Column
+    private byte[] imageData;
 
     @Column
-    protected LocalDateTime creationDateTime;
+    protected LocalDateTime creationDateTime = LocalDateTime.now();
     @Column
     protected int voteCount;
     @ManyToOne
     @JoinColumn(name = "user_id")
-    protected User author;
+    protected User user;
 
     public Post() {
     }
 
-    public Post(String text, int voteCount, User author) {
+    public Post(String text, byte[] imageData, int voteCount, User user) {
         this.text = text;
+        this.imageData = imageData;
         this.creationDateTime = LocalDateTime.now();
         this.voteCount = voteCount;
-        this.author = author;
+        this.user = user;
     }
 
-    public Post(Long id, String text, int voteCount, User author) {
+    public Post(Long id, byte[] imageData, String text, int voteCount, User user) {
         this.id = id;
         this.text = text;
+        this.imageData = imageData;
         this.creationDateTime = LocalDateTime.now();
         this.voteCount = voteCount;
-        this.author = author;
+        this.user = user;
     }
 
     @Override
@@ -55,12 +58,12 @@ public abstract class Post {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Post post = (Post) o;
-        return voteCount == post.voteCount && id.equals(post.id) && text.equals(post.text) && creationDateTime.equals(post.creationDateTime) && author.equals(post.author);
+        return voteCount == post.voteCount && id.equals(post.id) && text.equals(post.text) && creationDateTime.equals(post.creationDateTime) && user.equals(post.user);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, text, creationDateTime, voteCount, author);
+        return Objects.hash(id, text, creationDateTime, voteCount, user);
     }
 }
 

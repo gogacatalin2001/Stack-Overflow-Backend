@@ -2,8 +2,11 @@ package dev.stackoverflow.service;
 
 import dev.stackoverflow.exception.AnswerNotFoundException;
 import dev.stackoverflow.exception.QuestionNotFoundException;
+import dev.stackoverflow.exception.UserNotFoundException;
 import dev.stackoverflow.model.Answer;
 import dev.stackoverflow.model.Question;
+import dev.stackoverflow.model.Tag;
+import dev.stackoverflow.model.User;
 import dev.stackoverflow.repository.QuestionRepository;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,28 +37,21 @@ public class QuestionService {
         return questionRepository.findAll();
     }
 
-    public void saveQuestion(@NonNull Question question) {
-        tagService.saveTags(question.getTags());
-        questionRepository.save(question);
+    public Question saveQuestion(@NonNull Question question) {
+        List<Tag> tags = question.getTags();
+        for (int i = 0; i < tags.size(); i++) {
+            Tag tag = tags.get(i);
+            if (tagService.existsByText(tag.getText())) {
+                tags.remove(tag);
+                tags.add(tagService.getByText(tag.getText()));
+            }
+        }
+        question.setTags(tags);
+        return questionRepository.save(question);
     }
 
     public Question updateQuestion(@NonNull Question question, @NonNull Long id) {
-//        if (questionRepository.existsById(id)) {
-//            Question newQuestion = new Question(
-//                    id,
-//                    question.getText(),
-//                    question.getVoteCount(),
-//                    question.getAuthor(),
-//                    question.getTitle(),
-//                    question.getTags(),
-//                    question.getAnswers()
-//            );
-//            tagService.saveTags(newQuestion.getTags());
-//            questionRepository.save(newQuestion);
-//        } else {
-            return questionRepository.save(question);
-//        }
-//        return question;
+        return questionRepository.save(question);
     }
 
     public void deleteQuestion(@NonNull Long id) {
@@ -101,5 +97,9 @@ public class QuestionService {
         } else {
             throw new QuestionNotFoundException(questionId);
         }
+    }
+
+    public List<Question> saveQuestions(List<Question> questions) {
+        return questionRepository.saveAll(questions);
     }
 }

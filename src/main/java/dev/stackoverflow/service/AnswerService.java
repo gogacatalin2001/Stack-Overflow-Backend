@@ -32,7 +32,7 @@ public class AnswerService {
         return answerRepository.saveAll(answers);
     }
 
-    public Answer updateAnswer(@NonNull Answer answer) {
+    public Answer updateAnswer(@NonNull Answer answer, @NonNull Long id) {
         return answerRepository.save(answer);
     }
 

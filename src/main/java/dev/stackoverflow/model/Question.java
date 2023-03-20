@@ -12,9 +12,14 @@ import java.util.Objects;
 @Entity
 @Table(name = "question")
 public class Question extends Post {
-    @Column
+    @Column(unique = true)
     private String title;
-    @ManyToMany
+    @ManyToMany(
+            cascade = {
+                    CascadeType.PERSIST,
+                    CascadeType.MERGE
+            }
+    )
     private List<Tag> tags;
     @OneToMany(
             cascade = CascadeType.ALL
@@ -24,19 +29,19 @@ public class Question extends Post {
     public Question() {
     }
 
-//    public Question(String text, int voteCount, User author, @NonNull String title, @NonNull List<Tag> tags, List<Answer> answers) {
-//        super(text, voteCount, author);
-//        this.title = title;
-//        this.tags = tags;
-//        this.answers = answers;
-//    }
-//
-//    public Question(Long id, String text, int voteCount, @NonNull User author, @NonNull String title, @NonNull List<Tag> tags, List<Answer> answers) {
-//        super(id, text, voteCount, author);
-//        this.title = title;
-//        this.tags = tags;
-//        this.answers = answers;
-//    }
+    public Question(String text, byte[] imageData, int voteCount, User user, String title, List<Tag> tags, List<Answer> answers) {
+        super(text, imageData, voteCount, user);
+        this.title = title;
+        this.tags = tags;
+        this.answers = answers;
+    }
+
+    public Question(Long id, byte[] imageData, String text, int voteCount, User user, String title, List<Tag> tags, List<Answer> answers) {
+        super(id, imageData, text, voteCount, user);
+        this.title = title;
+        this.tags = tags;
+        this.answers = answers;
+    }
 
     public Answer addAnswer(@NonNull Answer answer) {
         this.answers.add(answer);

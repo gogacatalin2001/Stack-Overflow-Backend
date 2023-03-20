@@ -15,9 +15,17 @@ public class TagService {
     @Autowired
     private TagRepository tagRepository;
 
-    public Tag getTag(@NonNull Long id) {
+    public Tag getTagById(@NonNull Long id) {
         Optional<Tag> tag = tagRepository.findById(id);
         return tag.orElse(null);
+    }
+
+    public Tag getByText(@NonNull String text) {
+        return tagRepository.findByText(text);
+    }
+
+    public boolean existsByText(@NonNull String text) {
+        return tagRepository.existsByText(text);
     }
 
     public List<Tag> getTags() {
@@ -34,10 +42,6 @@ public class TagService {
 
     public Tag updateTag(@NonNull Tag tag) {
         return tagRepository.save(tag);
-    }
-
-    public void deleteTag(@NonNull Tag tag) {
-        tagRepository.delete(tag);
     }
 
     public void deleteTag(@NonNull Long id) {

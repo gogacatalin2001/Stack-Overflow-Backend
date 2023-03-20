@@ -29,12 +29,22 @@ public class QuestionController {
     }
 
     @PostMapping("/")
-    public void saveQuestion(@NonNull @RequestBody Question question) {
-        questionService.saveQuestion(question);
+    public Question saveQuestion(@NonNull @RequestBody Question question) {
+        return questionService.saveQuestion(question);
+    }
+
+    @PostMapping("/save-all")
+    public List<Question> saveQuestions(@NonNull @RequestBody List<Question> questions) {
+        return questionService.saveQuestions(questions);
     }
 
     @PutMapping("/{id}")
     public Question updateQuestion(@NonNull @RequestBody Question question, @NonNull @PathVariable Long id) {
         return questionService.updateQuestion(question, id);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteQuestion(@NonNull @PathVariable Long id) {
+        questionService.deleteQuestion(id);
     }
 }

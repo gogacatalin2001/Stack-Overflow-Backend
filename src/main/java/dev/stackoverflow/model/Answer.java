@@ -6,8 +6,18 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor
 @Entity
 @Table(name = "answer")
 public class Answer extends Post {
+
+    public Answer() {
+    }
+
+    public Answer(String text, byte[] imageData, int voteCount, User user) {
+        super(text, imageData, voteCount, user);
+    }
+
+    public Answer(Long id, byte[] imageData, String text, int voteCount, User user) {
+        super(id, imageData, text, voteCount, user);
+    }
 }

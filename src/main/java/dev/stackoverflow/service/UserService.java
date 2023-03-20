@@ -34,24 +34,7 @@ public class UserService {
     }
 
     public User updateUser(@NonNull User user, @NonNull Long id) {
-        if (userRepository.existsById(id)) {
-            User newUser = new User(
-                    id,
-                    user.getFirstName(),
-                    user.getLastName(),
-                    user.getEmail(),
-                    user.getPassword(),
-                    user.getPhoneNumber(),
-                    user.getScore(),
-                    user.isBanned(),
-                    user.isModerator(),
-                    user.getQuestions(),
-                    user.getAnswers()
-            );
-            return userRepository.save(newUser);
-        } else {
-            return userRepository.save(user);
-        }
+        return userRepository.save(user);
     }
 
     public void deleteUser(@NonNull Long id) {
