@@ -3,20 +3,19 @@ package dev.stackoverflow.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
-@ToString
 @Entity
 @Table(name = "tag")
-public class Tag{
-
+public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    private  Long tagId;
+    private Long id;
     @Column(unique = true)
     private String text;
-
 
     public Tag() {
     }
@@ -25,21 +24,9 @@ public class Tag{
         this.text = text;
     }
 
-    public Tag(Long tagId, String text) {
-        this.tagId = tagId;
+    public Tag(Long id, String text) {
+        this.id = id;
         this.text = text;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Tag tag = (Tag) o;
-        return getTagId().equals(tag.getTagId()) && getText().equals(tag.getText());
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 }

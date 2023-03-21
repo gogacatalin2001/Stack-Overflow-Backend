@@ -17,7 +17,7 @@ public abstract class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    protected Long id;
+    private Long id;
     //private User user;
     @Column
     protected String text;

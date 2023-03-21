@@ -10,6 +10,9 @@ import lombok.*;
 @Table(name = "answer")
 public class Answer extends Post {
 
+    @ManyToOne
+    @JoinColumn(name = "question_id")
+    private Question question;
     public Answer() {
     }
 

@@ -16,13 +16,13 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/")
+    @GetMapping("/get-all")
     @ResponseBody
     public List<User> getAll() {
         return userService.getUsers();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/get/{id}")
     @ResponseBody
     public User getUserById(@PathVariable Long id) {
         return userService.getUser(id);
@@ -38,13 +38,13 @@ public class UserController {
         userService.saveUsers(users);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     @ResponseBody
     public User updateUser(@NonNull @RequestBody User user, @NonNull @PathVariable Long id) {
         return userService.updateUser(user, id);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public void deleteUserById(@NonNull @PathVariable Long id) {
         userService.deleteUser(id);
     }
