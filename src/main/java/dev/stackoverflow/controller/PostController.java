@@ -2,7 +2,7 @@ package dev.stackoverflow.controller;
 
 import dev.stackoverflow.model.Answer;
 import dev.stackoverflow.model.Question;
-import dev.stackoverflow.model.Tag;
+import dev.stackoverflow.model.QuestionTagJSONWrapper;
 import dev.stackoverflow.service.PostService;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +29,10 @@ public class PostController {
         return postService.getQuestion(id);
     }
 
-    // TODO check how to send two different types of objects as request body
     @PostMapping("/questions/save")
     @ResponseBody
-    public Question saveQuestion(@NonNull @RequestBody Question question, @NonNull @RequestBody List<Tag> tags) {
-        return postService.saveQuestion(question, tags);
+    public Question saveQuestion(@NonNull @RequestBody QuestionTagJSONWrapper wrapper) {
+        return postService.saveQuestion(wrapper.getQuestion(), wrapper.getTags());
     }
 
     @PutMapping("/questions/update/{id}")

@@ -1,11 +1,13 @@
 package dev.stackoverflow.model;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Getter
 @Setter
@@ -35,9 +37,8 @@ public class Question extends Post {
         this.answers = answers;
     }
 
-    public Answer addAnswer(@NonNull Answer answer) {
+    public void addAnswer(@NonNull Answer answer) {
         this.answers.add(answer);
-        return answer;
     }
 
     public void deleteAnswer(@NonNull Answer answer) {
@@ -47,5 +48,4 @@ public class Question extends Post {
     public List<Answer> getAnswers() {
         return answers.stream().toList();
     }
-
 }

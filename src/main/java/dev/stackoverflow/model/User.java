@@ -34,23 +34,23 @@ public class User {
     private boolean banned;
     @Column(name = "moderator", columnDefinition = "bit(1) default false", nullable = false)
     private boolean moderator;
-    @OneToMany(
-            mappedBy = "user",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    private List<Question> questions = new ArrayList<>();
-    @OneToMany(
-            mappedBy = "user",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    private List<Answer> answers = new ArrayList<>();
+//    @OneToMany(
+//            mappedBy = "user",
+//            cascade = CascadeType.ALL,
+//            orphanRemoval = true
+//    )
+//    private List<Question> questions = new ArrayList<>();
+//    @OneToMany(
+//            mappedBy = "user",
+//            cascade = CascadeType.ALL,
+//            orphanRemoval = true
+//    )
+//    private List<Answer> answers = new ArrayList<>();
 
     public User() {
     }
 
-    public User(String firstName, String lastName, String email, String password, String phoneNumber, int score, boolean banned, boolean moderator, List<Question> questions, List<Answer> answers) {
+    public User(String firstName, String lastName, String email, String password, String phoneNumber, int score, boolean banned, boolean moderator) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -59,11 +59,9 @@ public class User {
         this.score = score;
         this.banned = banned;
         this.moderator = moderator;
-        this.questions = questions;
-        this.answers = answers;
     }
 
-    public User(Long userId, String firstName, String lastName, String email, String password, String phoneNumber, int score, boolean banned, boolean moderator, List<Question> questions, List<Answer> answers) {
+    public User(Long userId, String firstName, String lastName, String email, String password, String phoneNumber, int score, boolean banned, boolean moderator) {
         this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -73,8 +71,6 @@ public class User {
         this.score = score;
         this.banned = banned;
         this.moderator = moderator;
-        this.questions = questions;
-        this.answers = answers;
     }
 
     @Override

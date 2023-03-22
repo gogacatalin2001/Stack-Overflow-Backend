@@ -2,10 +2,7 @@ package dev.stackoverflow.service;
 
 import dev.stackoverflow.exception.AnswerNotFoundException;
 import dev.stackoverflow.exception.QuestionNotFoundException;
-import dev.stackoverflow.model.Answer;
-import dev.stackoverflow.model.Question;
-import dev.stackoverflow.model.QuestionTag;
-import dev.stackoverflow.model.Tag;
+import dev.stackoverflow.model.*;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,29 +30,39 @@ public class PostService {
     }
 
     public Question saveQuestion(@NonNull Question question, @NonNull List<Tag> tags) {
+        Question savedQuestion = questionService.saveQuestion(question);
         for (Tag tag : tags) {
             QuestionTag questionTag;
             if (tagService.existsByText(tag.getText())) {
-                questionTag = new QuestionTag(question, tagService.getByText(tag.getText()));
+                questionTag = new QuestionTag(savedQuestion, tagService.getByText(tag.getText()));
+
             } else {
-                questionTag = new QuestionTag(question, tag);
+                questionTag = new QuestionTag(savedQuestion, tagService.saveTag(tag));
             }
             questionTagService.saveQuestionTag(questionTag);
         }
-        return questionService.saveQuestion(question);
-
+        savedQuestion = questionService.updateQuestion(savedQuestion, savedQuestion.getId());
+        return savedQuestion;
     }
 
     public Question updateQuestion(@NonNull Question question, @NonNull Long id) {
-        // TODO modify the answers and tags of the question too
         Question oldQuestion = questionService.getQuestion(id);
         if (oldQuestion != null) {
-            // TODO ???
-            return questionService.updateQuestion(question, id);
+            List<Answer> answers = oldQuestion.getAnswers();
+            for (Answer answer : answers) {
+                question.addAnswer(answer);
+                answer.setQuestion(question);
+            }
+            Question newQuestion = questionService.updateQuestion(question, id);
+            List<QuestionTag> questionTags = questionTagService.getAllByQuestionId(id);
+            for (QuestionTag questionTag : questionTags) {
+                questionTag.setQuestion(question);
+                questionTagService.saveQuestionTag(questionTag);
+            }
+            return newQuestion;
         } else {
             throw new QuestionNotFoundException(id);
         }
-
     }
 
     public void deleteQuestion(@NonNull Long id) {
@@ -109,7 +116,7 @@ public class PostService {
         }
     }
 
-    public Question deleteAnswer(@NonNull Long questionId, @NonNull Long answerId) {
+    public void deleteAnswer(@NonNull Long questionId, @NonNull Long answerId) {
         Question question = questionService.getQuestion(questionId);
         if (question != null) {
             Answer answer = answerService.getAnswer(answerId);
@@ -117,7 +124,6 @@ public class PostService {
                 question.deleteAnswer(answer);
                 answerService.deleteAnswer(answerId);
                 questionService.updateQuestion(question, questionId);
-                return question;
             } else {
                 throw new AnswerNotFoundException(answerId);
             }
