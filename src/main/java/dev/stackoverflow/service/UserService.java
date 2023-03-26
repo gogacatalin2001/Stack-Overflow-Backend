@@ -4,25 +4,31 @@ import dev.stackoverflow.exception.UserNotFoundException;
 import dev.stackoverflow.model.User;
 import dev.stackoverflow.repository.UserRepository;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
-@Service
+@Service @RequiredArgsConstructor @Transactional
 public class UserService {
 
     @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     public List<User> getUsers() {
         return userRepository.findAll();
     }
 
-    public User getUser(@NonNull Long id) {
+    public User getUserById(@NonNull Long id) {
         Optional<User> user = userRepository.findById(id);
         return user.orElse(null);
+    }
+
+    public User getUserByUsername(@NonNull String username) {
+        return userRepository.findByUsername(username);
     }
 
     public User saveUser(@NonNull User user) {

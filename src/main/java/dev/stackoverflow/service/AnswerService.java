@@ -3,17 +3,19 @@ package dev.stackoverflow.service;
 import dev.stackoverflow.model.Answer;
 import dev.stackoverflow.repository.AnswerRepository;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
-@Service
+@Service @Transactional @RequiredArgsConstructor
 public class AnswerService {
 
     @Autowired
-    private AnswerRepository answerRepository;
+    private final AnswerRepository answerRepository;
 
     public Answer getAnswer(@NonNull Long id) {
         Optional<Answer> answer = answerRepository.findById(id);

@@ -4,19 +4,21 @@ import dev.stackoverflow.exception.AnswerNotFoundException;
 import dev.stackoverflow.exception.QuestionNotFoundException;
 import dev.stackoverflow.model.*;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Service
+@Service @Transactional @RequiredArgsConstructor
 public class PostService {
     @Autowired
-    private QuestionService questionService;
+    private final QuestionService questionService;
     @Autowired
-    private AnswerService answerService;
+    private final AnswerService answerService;
     @Autowired
-    private TagService tagService;
+    private final TagService tagService;
 
     @Autowired
     private QuestionTagService questionTagService;

@@ -2,87 +2,79 @@ package dev.stackoverflow.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.Hibernate;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "user")
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id", nullable = false, unique = true)
     private Long userId;
-    @Column(name = "first_name", columnDefinition = "varchar(50) default 'FirstName'", nullable = false)
-    private String firstName;
-    @Column(name = "last_name", columnDefinition = "varchar(50) default 'LastName'", nullable = false)
-    private String lastName;
-    @Column(name = "email", columnDefinition = "varchar(50) default 'defaultemail@provider.com'", nullable = false, unique = true)
+    @Column(name = "username", nullable = false, unique = true)
+    private String username;
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
-    @Column(name = "password", columnDefinition = "varchar(50) default 'password'", nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
-    @Column(name = "phone_number", columnDefinition = "varchar(50) default '0000000000'", nullable = false, unique = true)
+    @Column(name = "phone_number", nullable = false, unique = true)
     private String phoneNumber;
-    @Column(name = "score", columnDefinition = "int default 0", nullable = false)
+    @Column(name = "score", nullable = false)
     private int score;
-    @Column(name = "banned", columnDefinition = "bit(1) default false", nullable = false)
+    @Column(name = "banned",nullable = false)
     private boolean banned;
-    @Column(name = "moderator", columnDefinition = "bit(1) default false", nullable = false)
-    private boolean moderator;
-//    @OneToMany(
-//            mappedBy = "user",
-//            cascade = CascadeType.ALL,
-//            orphanRemoval = true
-//    )
-//    private List<Question> questions = new ArrayList<>();
-//    @OneToMany(
-//            mappedBy = "user",
-//            cascade = CascadeType.ALL,
-//            orphanRemoval = true
-//    )
-//    private List<Answer> answers = new ArrayList<>();
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
-    public User() {
-    }
-
-    public User(String firstName, String lastName, String email, String password, String phoneNumber, int score, boolean banned, boolean moderator) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public User(String username, String email, String password, String phoneNumber, int score, boolean banned, Role role) {
+        this.username = username;
         this.email = email;
         this.password = password;
         this.phoneNumber = phoneNumber;
         this.score = score;
         this.banned = banned;
-        this.moderator = moderator;
-    }
-
-    public User(Long userId, String firstName, String lastName, String email, String password, String phoneNumber, int score, boolean banned, boolean moderator) {
-        this.userId = userId;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.password = password;
-        this.phoneNumber = phoneNumber;
-        this.score = score;
-        this.banned = banned;
-        this.moderator = moderator;
+        this.role = role;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        User user = (User) o;
-        return Objects.equals(getUserId(), user.getUserId());
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
     @Override
-    public int hashCode() {
-        return getClass().hashCode();
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }

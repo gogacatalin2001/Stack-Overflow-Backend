@@ -2,19 +2,19 @@ package dev.stackoverflow.controller;
 
 import dev.stackoverflow.model.Answer;
 import dev.stackoverflow.model.Question;
-import dev.stackoverflow.model.QuestionTagJSONWrapper;
+import dev.stackoverflow.model.Tag;
 import dev.stackoverflow.service.PostService;
-import lombok.NonNull;
+import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
+@RestController @RequiredArgsConstructor
 public class PostController {
 
     @Autowired
-    private PostService postService;
+    private final PostService postService;
 
     //  QUESTIONS
     @GetMapping("/questions/get-all")
@@ -31,7 +31,7 @@ public class PostController {
 
     @PostMapping("/questions/save")
     @ResponseBody
-    public Question saveQuestion(@NonNull @RequestBody QuestionTagJSONWrapper wrapper) {
+    public Question saveQuestion(@NonNull @RequestBody QuestionTagWrapper wrapper) {
         return postService.saveQuestion(wrapper.getQuestion(), wrapper.getTags());
     }
 
@@ -73,5 +73,13 @@ public class PostController {
     @DeleteMapping("/question-id={qid}/answer-id={aid}")
     public void deleteAnswer(@NonNull @PathVariable Long qid, @NonNull @PathVariable Long aid) {
         postService.deleteAnswer(qid, aid);
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    class QuestionTagWrapper {
+        private Question question;
+        private List<Tag> tags;
     }
 }

@@ -4,18 +4,19 @@ import dev.stackoverflow.exception.QuestionNotFoundException;
 import dev.stackoverflow.model.*;
 import dev.stackoverflow.repository.QuestionRepository;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
-@Service
+@Service @Transactional @RequiredArgsConstructor
 public class QuestionService {
 
     @Autowired
-    private QuestionRepository questionRepository;
-
+    private final QuestionRepository questionRepository;
 
     public Question getQuestion(@NonNull Long id) {
         Optional<Question> question = questionRepository.findById(id);

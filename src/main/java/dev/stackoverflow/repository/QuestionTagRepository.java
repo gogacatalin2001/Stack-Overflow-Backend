@@ -11,7 +11,7 @@ public interface QuestionTagRepository extends JpaRepositoryImplementation<Quest
     List<QuestionTag> findAllByQuestionId(Long questionId);
     List<QuestionTag> findAllByTagId(Long tagId);
 
-    void deleteAllByTagId(@NonNull Long tagId);
+    void deleteAllByTagId(Long tagId);
 
-    void deleteAllByQuestionId(@NonNull Long questionId);
+    void deleteAllByQuestionId(Long questionId);
 }

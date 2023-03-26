@@ -3,17 +3,19 @@ package dev.stackoverflow.service;
 import dev.stackoverflow.model.Tag;
 import dev.stackoverflow.repository.TagRepository;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
-@Service
+@Service @Transactional @RequiredArgsConstructor
 public class TagService {
 
     @Autowired
-    private TagRepository tagRepository;
+    private final TagRepository tagRepository;
 
     public Tag getTagById(@NonNull Long id) {
         Optional<Tag> tag = tagRepository.findById(id);
