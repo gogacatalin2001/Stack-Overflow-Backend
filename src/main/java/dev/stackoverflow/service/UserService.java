@@ -35,10 +35,6 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public List<User> saveUsers(@NonNull List<User> users) {
-        return userRepository.saveAll(users);
-    }
-
     public User updateUser(@NonNull User user, @NonNull Long id) {
         return userRepository.save(user);
     }

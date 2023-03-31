@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Service @Transactional @RequiredArgsConstructor
@@ -24,7 +27,10 @@ public class PostService {
     private QuestionTagService questionTagService;
 
     public List<Question> getQuestions() {
-        return questionService.getQuestions();
+        return questionService.getQuestions()
+                .stream()
+                .sorted()
+                .toList();
     }
 
     public Question getQuestion(@NonNull Long id) {
@@ -37,7 +43,6 @@ public class PostService {
             QuestionTag questionTag;
             if (tagService.existsByText(tag.getText())) {
                 questionTag = new QuestionTag(savedQuestion, tagService.getByText(tag.getText()));
-
             } else {
                 questionTag = new QuestionTag(savedQuestion, tagService.saveTag(tag));
             }
@@ -85,6 +90,22 @@ public class PostService {
         return answerService.getAnswers();
     }
 
+    public List<Answer> getAnswersByQuestionId(@NonNull Long questionId) {
+        Question question = questionService.getQuestion(questionId);
+        List<Answer> answers;
+        if(question != null) {
+            List<Answer> allAnswers = answerService.getAnswers();
+            answers = allAnswers
+                    .stream()
+                    .filter(answer -> answer.getQuestion().equals(question))
+                    .sorted()
+                    .toList();
+            return answers;
+        }
+        else {
+            throw new QuestionNotFoundException(questionId);
+        }
+    }
     public Answer getAnswer(@NonNull Long id) {
         return answerService.getAnswer(id);
     }

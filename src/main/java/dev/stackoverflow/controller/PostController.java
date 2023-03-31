@@ -17,62 +17,89 @@ public class PostController {
     private final PostService postService;
 
     //  QUESTIONS
-    @GetMapping("/questions/get-all")
+    @GetMapping("/questions")
     @ResponseBody
     public List<Question> getAll() {
         return postService.getQuestions();
     }
 
-    @GetMapping("/questions/get/{id}")
+    @GetMapping("/questions/{question-id}")
     @ResponseBody
-    public Question getQuestion(@NonNull @PathVariable Long id) {
-        return postService.getQuestion(id);
+    public Question getQuestion(
+            @NonNull @PathVariable("question-id") Long questionId
+    ) {
+        return postService.getQuestion(questionId);
     }
 
-    @PostMapping("/questions/save")
+    @PostMapping("/questions")
     @ResponseBody
-    public Question saveQuestion(@NonNull @RequestBody QuestionTagWrapper wrapper) {
+    public Question saveQuestion(
+            @NonNull @RequestBody QuestionTagWrapper wrapper
+    ) {
         return postService.saveQuestion(wrapper.getQuestion(), wrapper.getTags());
     }
 
-    @PutMapping("/questions/update/{id}")
+    @PutMapping("/questions/{question-id}")
     @ResponseBody
-    public Question updateQuestion(@NonNull @RequestBody Question question, @NonNull @PathVariable Long id) {
-        return postService.updateQuestion(question, id);
+    public Question updateQuestion(
+            @NonNull @RequestBody Question question,
+            @NonNull @PathVariable("question-id") Long questionId
+    ) {
+        return postService.updateQuestion(question, questionId);
     }
 
-    @DeleteMapping("/questions/delete/{id}")
-    public void deleteQuestion(@NonNull @PathVariable Long id) {
-        postService.deleteQuestion(id);
+    @DeleteMapping("/questions/{question-id}")
+    public void deleteQuestion(
+            @NonNull @PathVariable("question-id") Long questionId
+    ) {
+        postService.deleteQuestion(questionId);
     }
 
     //  ANSWERS
-    @PostMapping("/answers/save/question-id={qid}")
+    @PostMapping("/answers/{question-id}")
     @ResponseBody
-    public Answer saveAnswer(@NonNull @RequestBody Answer answer, @NonNull @PathVariable Long qid) {
-        return postService.saveAnswer(answer, qid);
+    public Answer saveAnswer(
+            @NonNull @RequestBody Answer answer,
+            @NonNull @PathVariable("question-id") Long questionId
+    ) {
+        return postService.saveAnswer(answer, questionId);
     }
-    @GetMapping("/answers/get-all")
+    @GetMapping("/answers")
     @ResponseBody
     public List<Answer> getAnswers() {
         return postService.getAnswers();
     }
 
-    @GetMapping("/answers/{id}")
+    @GetMapping("/answers/{answer-id}")
     @ResponseBody
-    public Answer getAnswerById(@NonNull @PathVariable Long id) {
-        return postService.getAnswer(id);
+    public Answer getAnswerById(
+            @NonNull @PathVariable("answer-id") Long answerId
+    ) {
+        return postService.getAnswer(answerId);
     }
 
-    @PutMapping("/answers/question-id={qid}/answer-id={aid}")
+    @PutMapping("/answers/{answer-id}/{question-id}")
     @ResponseBody
-    public Answer updateAnswer(@NonNull @RequestBody Answer answer, @NonNull @PathVariable Long aid, @NonNull @PathVariable Long qid) {
-        return postService.updateAnswer(answer, aid, qid);
+    public Answer updateAnswer(
+            @NonNull @RequestBody Answer answer,
+            @NonNull @PathVariable("answer-id") Long answerId,
+            @NonNull @PathVariable("question-id") Long questionId
+    ) {
+        return postService.updateAnswer(answer, answerId, questionId);
     }
 
-    @DeleteMapping("/question-id={qid}/answer-id={aid}")
-    public void deleteAnswer(@NonNull @PathVariable Long qid, @NonNull @PathVariable Long aid) {
-        postService.deleteAnswer(qid, aid);
+    @DeleteMapping("/answers/{answer-id}/{question-id}")
+    public void deleteAnswer(
+            @NonNull @PathVariable("question-id") Long questionId,
+            @NonNull @PathVariable("answer-id") Long answerId
+    ) {
+        postService.deleteAnswer(questionId, answerId);
+    }
+
+    @GetMapping("/answers/{question-id}")
+    @ResponseBody
+    public List<Answer> getAnswersByQuestionId(@NonNull @PathVariable("question-id") Long questionId) {
+        return postService.getAnswersByQuestionId(questionId);
     }
 
     @Getter

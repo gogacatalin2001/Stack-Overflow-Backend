@@ -10,7 +10,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @Entity
-@Table(name = "post")
+@Table()
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Post {
 

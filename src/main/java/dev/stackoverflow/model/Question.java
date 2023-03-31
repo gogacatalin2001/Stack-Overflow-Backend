@@ -1,8 +1,5 @@
 package dev.stackoverflow.model;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSetter;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,8 +9,8 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name = "question")
-public class Question extends Post {
+@Table()
+public class Question extends Post implements Comparable<Question> {
     @Column(unique = true)
     private String title;
     @OneToMany(
@@ -47,5 +44,10 @@ public class Question extends Post {
 
     public List<Answer> getAnswers() {
         return answers.stream().toList();
+    }
+
+    @Override
+    public int compareTo(Question q) {
+        return this.creationDateTime.compareTo(q.creationDateTime);
     }
 }

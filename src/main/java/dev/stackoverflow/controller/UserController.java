@@ -5,6 +5,8 @@ import dev.stackoverflow.service.UserService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,43 +18,34 @@ public class UserController {
     @Autowired
     private final UserService userService;
 
+    @PreAuthorize("hasRole('MODERATOR')")
     @GetMapping("/users")
     @ResponseBody
     public List<User> getAll() {
         return userService.getUsers();
     }
 
-    @GetMapping("/user/get/{id}")
+    @GetMapping("/users/{user-id}")
     @ResponseBody
-    public User getUserById(@PathVariable Long id) {
-        return userService.getUserById(id);
+    public User getUserById(@PathVariable("user-id") Long userId) {
+        return userService.getUserById(userId);
     }
 
-    @GetMapping("/user/get/{username}")
+    @GetMapping("/users/{username}")
     @ResponseBody
     public User getUserByUsername(@PathVariable String username) {
         return userService.getUserByUsername(username);
     }
 
-    @PostMapping("/user/save")
-    public void saveUser(@NonNull @RequestBody User user) {
-        userService.saveUser(user);
-    }
-
-    @PostMapping("/user/save-all")
-    public void saveUsers(@NonNull @RequestBody List<User> users) {
-        userService.saveUsers(users);
-    }
-
-    @PutMapping("/user/update/{id}")
+    @PutMapping("/users/{user-id}")
     @ResponseBody
-    public User updateUser(@NonNull @RequestBody User user, @NonNull @PathVariable Long id) {
-        return userService.updateUser(user, id);
+    public User updateUser(@NonNull @RequestBody User user, @NonNull @PathVariable("user-id") Long userId) {
+        return userService.updateUser(user, userId);
     }
 
-    @DeleteMapping("/user/delete/{id}")
-    public void deleteUserById(@NonNull @PathVariable Long id) {
-        userService.deleteUser(id);
+    @DeleteMapping("/users/{user-id}")
+    public void deleteUserById(@NonNull @PathVariable("user-id") Long userId) {
+        userService.deleteUser(userId);
     }
 
 }
