@@ -8,8 +8,9 @@ import java.util.List;
 
 @Getter
 @Setter
+@AllArgsConstructor
 @Entity
-@Table()
+@Table
 public class Question extends Post implements Comparable<Question> {
     @Column(unique = true)
     private String title;
@@ -20,19 +21,20 @@ public class Question extends Post implements Comparable<Question> {
     private List<Answer> answers = new ArrayList<>();
 
     public Question() {
+
     }
 
-    public Question(String text, byte[] imageData, int voteCount, User user, String title, List<Answer> answers) {
-        super(text, imageData, voteCount, user);
-        this.title = title;
-        this.answers = answers;
-    }
-
-    public Question(Long id, byte[] imageData, String text, int voteCount, User user, String title, List<Answer> answers) {
-        super(id, imageData, text, voteCount, user);
-        this.title = title;
-        this.answers = answers;
-    }
+//    public Question(String text, byte[] imageData, User user, String title, List<Answer> answers) {
+//        super(text, imageData, user);
+//        this.title = title;
+//        this.answers = answers;
+//    }
+//
+//    public Question(Long id, byte[] imageData, String text, Integer voteCount, User user, String title, List<Answer> answers) {
+//        super(id, imageData, text, voteCount, user);
+//        this.title = title;
+//        this.answers = answers;
+//    }
 
     public void addAnswer(@NonNull Answer answer) {
         this.answers.add(answer);

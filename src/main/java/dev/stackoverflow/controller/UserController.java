@@ -18,33 +18,32 @@ public class UserController {
     @Autowired
     private final UserService userService;
 
-    @PreAuthorize("hasRole('MODERATOR')")
-    @GetMapping("/users")
+    @GetMapping("/users/all")
     @ResponseBody
     public List<User> getAll() {
         return userService.getUsers();
     }
 
-    @GetMapping("/users/{user-id}")
-    @ResponseBody
-    public User getUserById(@PathVariable("user-id") Long userId) {
-        return userService.getUserById(userId);
-    }
+//    @GetMapping("/users")
+//    @ResponseBody
+//    public User getUserById(@RequestParam("user-id") Long userId) {
+//        return userService.getUserById(userId);
+//    }
 
-    @GetMapping("/users/{username}")
+    @GetMapping("/users")
     @ResponseBody
-    public User getUserByUsername(@PathVariable String username) {
+    public User getUserByUsername(@RequestParam("username") String username) {
         return userService.getUserByUsername(username);
     }
 
-    @PutMapping("/users/{user-id}")
+    @PutMapping("/users")
     @ResponseBody
-    public User updateUser(@NonNull @RequestBody User user, @NonNull @PathVariable("user-id") Long userId) {
+    public User updateUser(@NonNull @RequestBody User user, @NonNull @RequestParam("user-id") Long userId) {
         return userService.updateUser(user, userId);
     }
 
-    @DeleteMapping("/users/{user-id}")
-    public void deleteUserById(@NonNull @PathVariable("user-id") Long userId) {
+    @DeleteMapping("/users")
+    public void deleteUserById(@NonNull @RequestParam("user-id") Long userId) {
         userService.deleteUser(userId);
     }
 

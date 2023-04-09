@@ -16,7 +16,7 @@ public class QuestionTagService {
     @Autowired
     private final QuestionTagRepository questionTagRepository;
 
-    public QuestionTag saveQuestionTag(@NonNull QuestionTag questionTag) {
+    public QuestionTag save(@NonNull QuestionTag questionTag) {
         return questionTagRepository.save(questionTag);
     }
 

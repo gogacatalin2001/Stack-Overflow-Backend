@@ -10,7 +10,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @Entity
-@Table()
+@Table
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Post {
 
@@ -18,17 +18,14 @@ public abstract class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
     private Long id;
-    //private User user;
     @Column
     protected String text;
-
     @Column
     private byte[] imageData;
-
     @Column
     protected LocalDateTime creationDateTime = LocalDateTime.now();
     @Column
-    protected int voteCount;
+    protected Integer voteCount;
     @ManyToOne
     @JoinColumn(name = "user_id")
     protected User user;
@@ -36,15 +33,15 @@ public abstract class Post {
     public Post() {
     }
 
-    public Post(String text, byte[] imageData, int voteCount, User user) {
+    public Post(@NonNull String text, byte[] imageData, @NonNull User user) {
         this.text = text;
         this.imageData = imageData;
         this.creationDateTime = LocalDateTime.now();
-        this.voteCount = voteCount;
+        this.voteCount = 0;
         this.user = user;
     }
 
-    public Post(Long id, byte[] imageData, String text, int voteCount, User user) {
+    public Post(@NonNull Long id, byte[] imageData, @NonNull String text, @NonNull Integer voteCount, @NonNull User user) {
         this.id = id;
         this.text = text;
         this.imageData = imageData;

@@ -6,6 +6,7 @@ import dev.stackoverflow.model.Tag;
 import dev.stackoverflow.service.PostService;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,17 +17,16 @@ public class PostController {
     @Autowired
     private final PostService postService;
 
-    //  QUESTIONS
-    @GetMapping("/questions")
+    @GetMapping("/questions/all")
     @ResponseBody
     public List<Question> getAll() {
         return postService.getQuestions();
     }
 
-    @GetMapping("/questions/{question-id}")
+    @GetMapping("/questions")
     @ResponseBody
     public Question getQuestion(
-            @NonNull @PathVariable("question-id") Long questionId
+            @NonNull @RequestParam("question-id") Long questionId
     ) {
         return postService.getQuestion(questionId);
     }
@@ -34,78 +34,102 @@ public class PostController {
     @PostMapping("/questions")
     @ResponseBody
     public Question saveQuestion(
-            @NonNull @RequestBody QuestionTagWrapper wrapper
+            @NonNull @RequestBody QuestionTagWrapper wrapper,
+            @NonNull @RequestParam("user-id") Long userId
     ) {
-        return postService.saveQuestion(wrapper.getQuestion(), wrapper.getTags());
+        return postService.saveQuestion(wrapper.getQuestion(), wrapper.getTags(), userId);
     }
 
-    @PutMapping("/questions/{question-id}")
+    @PutMapping("/questions")
     @ResponseBody
     public Question updateQuestion(
             @NonNull @RequestBody Question question,
-            @NonNull @PathVariable("question-id") Long questionId
+            @NonNull @RequestParam("question-id") Long questionId
     ) {
         return postService.updateQuestion(question, questionId);
     }
 
-    @DeleteMapping("/questions/{question-id}")
+    @PutMapping("/questions/votes")
+    @ResponseBody
+    public Question updateQuestionVotes(
+            @NonNull @RequestParam("question-id") Long questionId,
+            @NonNull @RequestParam("user-id") Long userId,
+            @NonNull @RequestParam("vote") Integer vote
+    ) {
+        return postService.updateQuestionVotes(questionId, userId, vote);
+    }
+
+    @DeleteMapping("/questions")
     public void deleteQuestion(
-            @NonNull @PathVariable("question-id") Long questionId
+            @NonNull @RequestParam("question-id") Long questionId
     ) {
         postService.deleteQuestion(questionId);
     }
 
-    //  ANSWERS
-    @PostMapping("/answers/{question-id}")
-    @ResponseBody
-    public Answer saveAnswer(
-            @NonNull @RequestBody Answer answer,
-            @NonNull @PathVariable("question-id") Long questionId
-    ) {
-        return postService.saveAnswer(answer, questionId);
-    }
-    @GetMapping("/answers")
+    @GetMapping("/answers/all")
     @ResponseBody
     public List<Answer> getAnswers() {
         return postService.getAnswers();
     }
 
-    @GetMapping("/answers/{answer-id}")
+    @GetMapping("/answers")
     @ResponseBody
     public Answer getAnswerById(
-            @NonNull @PathVariable("answer-id") Long answerId
+            @NonNull @RequestParam("answer-id") Long answerId
     ) {
         return postService.getAnswer(answerId);
     }
 
-    @PutMapping("/answers/{answer-id}/{question-id}")
+    @PostMapping("/answers")
+    @ResponseBody
+    public Answer saveAnswer(
+            @NonNull @RequestBody Answer answer,
+            @NonNull @RequestParam("question-id") Long questionId,
+            @NonNull @RequestParam("user-id") Long userId
+    ) {
+        return postService.saveAnswer(answer, questionId, userId);
+    }
+
+    @PutMapping("/answers")
     @ResponseBody
     public Answer updateAnswer(
             @NonNull @RequestBody Answer answer,
-            @NonNull @PathVariable("answer-id") Long answerId,
-            @NonNull @PathVariable("question-id") Long questionId
+            @NonNull @RequestParam("answer-id") Long answerId,
+            @NonNull @RequestParam("question-id") Long questionId,
+            @NonNull @RequestParam("user-id") Long userId
     ) {
-        return postService.updateAnswer(answer, answerId, questionId);
+        return postService.updateAnswer(answer, answerId, questionId, userId);
     }
 
-    @DeleteMapping("/answers/{answer-id}/{question-id}")
+    @PutMapping("/answers/votes")
+    @ResponseBody
+    public Answer updateAnswerVotes(
+            @NonNull @RequestParam("answer-id") Long answerId,
+            @NonNull @RequestParam("user-id") Long userId,
+            @NonNull @RequestParam("vote") Integer vote
+
+            ) {
+        return postService.updateAnswerVotes(answerId, userId, vote);
+    }
+
+    @DeleteMapping("/answers")
     public void deleteAnswer(
-            @NonNull @PathVariable("question-id") Long questionId,
-            @NonNull @PathVariable("answer-id") Long answerId
+            @NonNull @RequestParam("question-id") Long questionId,
+            @NonNull @RequestParam("answer-id") Long answerId
     ) {
         postService.deleteAnswer(questionId, answerId);
     }
 
-    @GetMapping("/answers/{question-id}")
+    @GetMapping("/questions/answers")
     @ResponseBody
-    public List<Answer> getAnswersByQuestionId(@NonNull @PathVariable("question-id") Long questionId) {
+    public List<Answer> getAnswersByQuestionId(@NonNull @RequestParam("question-id") Long questionId) {
         return postService.getAnswersByQuestionId(questionId);
     }
 
     @Getter
     @Setter
     @AllArgsConstructor
-    class QuestionTagWrapper {
+    static class QuestionTagWrapper {
         private Question question;
         private List<Tag> tags;
     }

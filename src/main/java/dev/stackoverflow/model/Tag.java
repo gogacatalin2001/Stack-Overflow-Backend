@@ -8,7 +8,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table()
+@Table
 public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
