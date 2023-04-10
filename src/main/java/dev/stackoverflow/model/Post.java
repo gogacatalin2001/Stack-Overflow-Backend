@@ -21,7 +21,7 @@ public abstract class Post {
     @Column
     protected String text;
     @Column
-    private byte[] imageData;
+    private String imageURL;
     @Column
     protected LocalDateTime creationDateTime = LocalDateTime.now();
     @Column
@@ -33,18 +33,18 @@ public abstract class Post {
     public Post() {
     }
 
-    public Post(@NonNull String text, byte[] imageData, @NonNull User user) {
+    public Post(@NonNull String text, String imageData, @NonNull User user) {
         this.text = text;
-        this.imageData = imageData;
+        this.imageURL = imageData;
         this.creationDateTime = LocalDateTime.now();
         this.voteCount = 0;
         this.user = user;
     }
 
-    public Post(@NonNull Long id, byte[] imageData, @NonNull String text, @NonNull Integer voteCount, @NonNull User user) {
+    public Post(@NonNull Long id, String imageData, @NonNull String text, @NonNull Integer voteCount, @NonNull User user) {
         this.id = id;
         this.text = text;
-        this.imageData = imageData;
+        this.imageURL = imageData;
         this.creationDateTime = LocalDateTime.now();
         this.voteCount = voteCount;
         this.user = user;
@@ -55,7 +55,7 @@ public abstract class Post {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Post post = (Post) o;
-        return voteCount == post.voteCount && id.equals(post.id) && text.equals(post.text) && creationDateTime.equals(post.creationDateTime) && user.equals(post.user);
+        return voteCount.equals(post.voteCount) && id.equals(post.id) && text.equals(post.text) && creationDateTime.equals(post.creationDateTime) && user.equals(post.user);
     }
 
     @Override

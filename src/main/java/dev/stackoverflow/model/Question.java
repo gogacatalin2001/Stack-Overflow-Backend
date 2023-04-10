@@ -24,18 +24,6 @@ public class Question extends Post implements Comparable<Question> {
 
     }
 
-//    public Question(String text, byte[] imageData, User user, String title, List<Answer> answers) {
-//        super(text, imageData, user);
-//        this.title = title;
-//        this.answers = answers;
-//    }
-//
-//    public Question(Long id, byte[] imageData, String text, Integer voteCount, User user, String title, List<Answer> answers) {
-//        super(id, imageData, text, voteCount, user);
-//        this.title = title;
-//        this.answers = answers;
-//    }
-
     public void addAnswer(@NonNull Answer answer) {
         this.answers.add(answer);
     }
