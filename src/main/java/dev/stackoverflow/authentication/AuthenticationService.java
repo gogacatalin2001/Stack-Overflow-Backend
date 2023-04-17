@@ -41,17 +41,5 @@ public class AuthenticationService {
             return new AuthenticationResponse(jwtService.generateToken(userDetails));
         }
         return new AuthenticationResponse("Authentication error");
-
-//        authenticationManager.authenticate(
-//                new UsernamePasswordAuthenticationToken(
-//                        request.getUsername(),
-//                        request.getPassword()
-//                )
-//        );
-//        var user = userService.getUserByUsername(request.getUsername());
-//        var jwtToken = jwtService.generateToken(user);
-//        return AuthenticationResponse.builder()
-//                .token(jwtToken)
-//                .build();
     }
 }

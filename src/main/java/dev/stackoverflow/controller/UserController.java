@@ -5,14 +5,13 @@ import dev.stackoverflow.service.UserService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
-@RestController @RequiredArgsConstructor
+@RequiredArgsConstructor
+@RestController
+@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*")
 public class UserController {
 
     @Autowired
@@ -48,3 +47,4 @@ public class UserController {
     }
 
 }
+

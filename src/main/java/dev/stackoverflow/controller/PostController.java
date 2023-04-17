@@ -6,13 +6,13 @@ import dev.stackoverflow.model.Tag;
 import dev.stackoverflow.service.PostService;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController @RequiredArgsConstructor
+@RequiredArgsConstructor
+@RestController
+@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*")
 public class PostController {
 
     @Autowired
@@ -40,7 +40,7 @@ public class PostController {
     ) {
         return postService.saveQuestion(wrapper.getQuestion(), wrapper.getTags(), userId);
     }
-//    @PreAuthorize("")
+    //    @PreAuthorize("")
     @PutMapping("/questions")
     @ResponseBody
     public Question updateQuestion(
@@ -109,7 +109,7 @@ public class PostController {
             @NonNull @RequestParam("user-id") Long userId,
             @NonNull @RequestParam("vote") Integer vote
 
-            ) {
+    ) {
         return postService.updateAnswerVotes(answerId, userId, vote);
     }
 
