@@ -38,8 +38,12 @@ public class AuthenticationService {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
         final UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
         if (userDetails != null) {
-            return new AuthenticationResponse(jwtService.generateToken(userDetails));
+            return AuthenticationResponse.builder()
+                    .token(jwtService.generateToken(userDetails))
+                    .build();
         }
-        return new AuthenticationResponse("Authentication error");
+        return AuthenticationResponse.builder()
+                .token("Authentication error")
+                .build();
     }
 }
