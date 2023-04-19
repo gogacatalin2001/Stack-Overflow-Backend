@@ -42,6 +42,7 @@ public class JwtService {
                 .builder()
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
+                .claim("username", user.getUsername())
                 .claim("userId", user.getUserId())
                 .claim("email", user.getEmail())
                 .claim("score", user.getScore())

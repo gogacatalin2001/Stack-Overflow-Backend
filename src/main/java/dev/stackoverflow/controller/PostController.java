@@ -2,7 +2,7 @@ package dev.stackoverflow.controller;
 
 import dev.stackoverflow.model.Answer;
 import dev.stackoverflow.model.Question;
-import dev.stackoverflow.model.Tag;
+import dev.stackoverflow.model.QuestionTagWrapper;
 import dev.stackoverflow.service.PostService;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,9 +10,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
 @RequiredArgsConstructor
 @RestController
-@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*")
+@CrossOrigin(origins = "http://localhost:3000",allowedHeaders = "*", allowCredentials = "true")
 public class PostController {
 
     @Autowired
@@ -20,41 +21,41 @@ public class PostController {
 
     @GetMapping("/questions/all")
     @ResponseBody
-    public List<Question> getAll() {
+    public List<QuestionTagWrapper> getAll() {
         return postService.getQuestions();
     }
 
     @GetMapping("/questions")
     @ResponseBody
-    public Question getQuestion(
-            @NonNull @RequestParam("question-id") Long questionId
+    public QuestionTagWrapper getQuestion(
+            @NonNull @RequestParam("question_id") Long questionId
     ) {
         return postService.getQuestion(questionId);
     }
 
     @PostMapping("/questions")
     @ResponseBody
-    public Question saveQuestion(
+    public QuestionTagWrapper saveQuestion(
             @NonNull @RequestBody QuestionTagWrapper wrapper,
-            @NonNull @RequestParam("user-id") Long userId
+            @NonNull @RequestParam("user_id") Long userId
     ) {
         return postService.saveQuestion(wrapper.getQuestion(), wrapper.getTags(), userId);
     }
-    //    @PreAuthorize("")
+
     @PutMapping("/questions")
     @ResponseBody
-    public Question updateQuestion(
+    public QuestionTagWrapper updateQuestion(
             @NonNull @RequestBody Question question,
-            @NonNull @RequestParam("question-id") Long questionId
+            @NonNull @RequestParam("question_id") Long questionId
     ) {
         return postService.updateQuestion(question, questionId);
     }
 
     @PutMapping("/questions/votes")
     @ResponseBody
-    public Question updateQuestionVotes(
-            @NonNull @RequestParam("question-id") Long questionId,
-            @NonNull @RequestParam("user-id") Long userId,
+    public QuestionTagWrapper updateQuestionVotes(
+            @NonNull @RequestParam("question_id") Long questionId,
+            @NonNull @RequestParam("user_id") Long userId,
             @NonNull @RequestParam("vote") Integer vote
     ) {
         return postService.updateQuestionVotes(questionId, userId, vote);
@@ -62,7 +63,7 @@ public class PostController {
 
     @DeleteMapping("/questions")
     public void deleteQuestion(
-            @NonNull @RequestParam("question-id") Long questionId
+            @NonNull @RequestParam("question_id") Long questionId
     ) {
         postService.deleteQuestion(questionId);
     }
@@ -76,7 +77,7 @@ public class PostController {
     @GetMapping("/answers")
     @ResponseBody
     public Answer getAnswerById(
-            @NonNull @RequestParam("answer-id") Long answerId
+            @NonNull @RequestParam("answer_id") Long answerId
     ) {
         return postService.getAnswer(answerId);
     }
@@ -85,8 +86,8 @@ public class PostController {
     @ResponseBody
     public Answer saveAnswer(
             @NonNull @RequestBody Answer answer,
-            @NonNull @RequestParam("question-id") Long questionId,
-            @NonNull @RequestParam("user-id") Long userId
+            @NonNull @RequestParam("question_id") Long questionId,
+            @NonNull @RequestParam("user_id") Long userId
     ) {
         return postService.saveAnswer(answer, questionId, userId);
     }
@@ -95,9 +96,9 @@ public class PostController {
     @ResponseBody
     public Answer updateAnswer(
             @NonNull @RequestBody Answer answer,
-            @NonNull @RequestParam("answer-id") Long answerId,
-            @NonNull @RequestParam("question-id") Long questionId,
-            @NonNull @RequestParam("user-id") Long userId
+            @NonNull @RequestParam("answer_id") Long answerId,
+            @NonNull @RequestParam("question_id") Long questionId,
+            @NonNull @RequestParam("user_id") Long userId
     ) {
         return postService.updateAnswer(answer, answerId, questionId, userId);
     }
@@ -105,8 +106,8 @@ public class PostController {
     @PutMapping("/answers/votes")
     @ResponseBody
     public Answer updateAnswerVotes(
-            @NonNull @RequestParam("answer-id") Long answerId,
-            @NonNull @RequestParam("user-id") Long userId,
+            @NonNull @RequestParam("answer_id") Long answerId,
+            @NonNull @RequestParam("user_id") Long userId,
             @NonNull @RequestParam("vote") Integer vote
 
     ) {
@@ -115,23 +116,15 @@ public class PostController {
 
     @DeleteMapping("/answers")
     public void deleteAnswer(
-            @NonNull @RequestParam("question-id") Long questionId,
-            @NonNull @RequestParam("answer-id") Long answerId
+            @NonNull @RequestParam("question_id") Long questionId,
+            @NonNull @RequestParam("answer_id") Long answerId
     ) {
         postService.deleteAnswer(questionId, answerId);
     }
 
     @GetMapping("/questions/answers")
     @ResponseBody
-    public List<Answer> getAnswersByQuestionId(@NonNull @RequestParam("question-id") Long questionId) {
+    public List<Answer> getAnswersByQuestionId(@NonNull @RequestParam("question_id") Long questionId) {
         return postService.getAnswersByQuestionId(questionId);
-    }
-
-    @Getter
-    @Setter
-    @AllArgsConstructor
-    static class QuestionTagWrapper {
-        private Question question;
-        private List<Tag> tags;
     }
 }

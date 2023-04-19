@@ -33,22 +33,22 @@ public abstract class Post {
     public Post() {
     }
 
-    public Post(@NonNull String text, String imageData, @NonNull User user) {
-        this.text = text;
-        this.imageURL = imageData;
-        this.creationDateTime = LocalDateTime.now();
-        this.voteCount = 0;
-        this.user = user;
-    }
-
-    public Post(@NonNull Long id, String imageData, @NonNull String text, @NonNull Integer voteCount, @NonNull User user) {
-        this.id = id;
-        this.text = text;
-        this.imageURL = imageData;
-        this.creationDateTime = LocalDateTime.now();
-        this.voteCount = voteCount;
-        this.user = user;
-    }
+//    public Post(@NonNull String text, String imageData, @NonNull User user) {
+//        this.text = text;
+//        this.imageURL = imageData;
+//        this.creationDateTime = LocalDateTime.now();
+//        this.voteCount = 0;
+//        this.user = user;
+//    }
+//
+//    public Post(@NonNull Long id, String imageData, @NonNull String text, @NonNull Integer voteCount, @NonNull User user) {
+//        this.id = id;
+//        this.text = text;
+//        this.imageURL = imageData;
+//        this.creationDateTime = LocalDateTime.now();
+//        this.voteCount = voteCount;
+//        this.user = user;
+//    }
 
     @Override
     public boolean equals(Object o) {

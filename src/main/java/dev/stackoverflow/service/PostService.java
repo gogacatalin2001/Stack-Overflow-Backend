@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -30,18 +31,25 @@ public class PostService {
     @Autowired
     private final UserService userService;
 
-    public List<Question> getQuestions() {
-        return questionService.getQuestions()
-                .stream()
-                .sorted()
-                .toList();
+    public List<QuestionTagWrapper> getQuestions() {
+        List<QuestionTagWrapper> questionTagWrappers = new ArrayList<>();
+        List<Question> questions = questionService.getQuestions();
+        for (Question question : questions) {
+            List<QuestionTag> questionTags = questionTagService.getAllByQuestionId(question.getId());
+            List<Tag> tags = new ArrayList<>();
+            for (QuestionTag qt : questionTags) {
+                tags.add(qt.getTag());
+            }
+            questionTagWrappers.add(new QuestionTagWrapper(question, tags));
+        }
+        return questionTagWrappers;
     }
 
-    public Question getQuestion(@NonNull Long id) {
-        return questionService.getQuestion(id);
+    public QuestionTagWrapper getQuestion(@NonNull Long questionId) {
+        return getQuestionTagWrapper(questionId);
     }
 
-    public Question saveQuestion(@NonNull Question question, @NonNull List<Tag> tags, @NonNull Long userId) {
+    public QuestionTagWrapper saveQuestion(@NonNull Question question, @NonNull List<Tag> tags, @NonNull Long userId) {
         User user = userService.getUserById(userId);
         if (user != null) {
             question.setUser(user);
@@ -56,33 +64,34 @@ public class PostService {
                 }
                 questionTagService.save(questionTag);
             }
-            return questionService.updateQuestion(savedQuestion, savedQuestion.getId());
+            questionService.updateQuestion(savedQuestion, savedQuestion.getId());
+            return getQuestionTagWrapper(savedQuestion.getId());
         } else {
             throw new UserNotFoundException(userId);
         }
     }
 
-    public Question updateQuestion(@NonNull Question question, @NonNull Long id) {
-        Question oldQuestion = questionService.getQuestion(id);
+    public QuestionTagWrapper updateQuestion(@NonNull Question question, @NonNull Long questionId) {
+        Question oldQuestion = questionService.getQuestion(questionId);
         if (oldQuestion != null) {
             List<Answer> answers = oldQuestion.getAnswers();
             for (Answer answer : answers) {
                 question.addAnswer(answer);
                 answer.setQuestion(question);
             }
-            Question newQuestion = questionService.updateQuestion(question, id);
-            List<QuestionTag> questionTags = questionTagService.getAllByQuestionId(id);
+            questionService.updateQuestion(question, questionId);
+            List<QuestionTag> questionTags = questionTagService.getAllByQuestionId(questionId);
             for (QuestionTag questionTag : questionTags) {
                 questionTag.setQuestion(question);
                 questionTagService.save(questionTag);
             }
-            return newQuestion;
+            return getQuestionTagWrapper(questionId);
         } else {
-            throw new QuestionNotFoundException(id);
+            throw new QuestionNotFoundException(questionId);
         }
     }
 
-    public Question updateQuestionVotes(@NonNull Long questionId, @NonNull Long userId, @NonNull Integer amount) {
+    public QuestionTagWrapper updateQuestionVotes(@NonNull Long questionId, @NonNull Long userId, @NonNull Integer amount) {
         Question question = questionService.getQuestion(questionId);
         if (question != null) {
             User user = userService.getUserById(userId);
@@ -97,7 +106,7 @@ public class PostService {
                 } else {
                     throw new UserAlreadyVotedException(userId);
                 }
-                return question;
+                return getQuestionTagWrapper(questionId);
             } else {
                 throw new UserNotFoundException(userId);
             }
@@ -106,17 +115,17 @@ public class PostService {
         }
     }
 
-    public void deleteQuestion(@NonNull Long id) {
-        Question question = questionService.getQuestion(id);
+    public void deleteQuestion(@NonNull Long questionId) {
+        Question question = questionService.getQuestion(questionId);
         if (question != null) {
             List<Answer> answers = question.getAnswers();
             for (Answer answer : answers) {
                 answerService.deleteAnswer(answer.getId());
             }
-            questionTagService.deleteAllByQuestionId(id);
-            questionService.deleteQuestion(id);
+            questionTagService.deleteAllByQuestionId(questionId);
+            questionService.deleteQuestion(questionId);
         } else {
-            throw new QuestionNotFoundException(id);
+            throw new QuestionNotFoundException(questionId);
         }
     }
 
@@ -140,8 +149,8 @@ public class PostService {
         }
     }
 
-    public Answer getAnswer(@NonNull Long id) {
-        return answerService.getAnswer(id);
+    public Answer getAnswer(@NonNull Long answerId) {
+        return answerService.getAnswer(answerId);
     }
 
     public Answer saveAnswer(@NonNull Answer answer, @NonNull Long questionId, @NonNull Long userId) {
@@ -227,5 +236,15 @@ public class PostService {
         } else {
             throw new QuestionNotFoundException(questionId);
         }
+    }
+
+    private QuestionTagWrapper getQuestionTagWrapper(@NonNull Long questionId) {
+        Question question = questionService.getQuestion(questionId);
+        List<QuestionTag> questionTags = questionTagService.getAllByQuestionId(question.getId());
+        List<Tag> tags = new ArrayList<>();
+        for (QuestionTag qt : questionTags) {
+            tags.add(qt.getTag());
+        }
+        return new QuestionTagWrapper(question, tags);
     }
 }
