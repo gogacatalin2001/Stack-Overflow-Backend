@@ -28,13 +28,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain (HttpSecurity http) throws Exception {
         http
-
                 .cors()
                 .and()
                 .csrf().disable()
                 .authorizeHttpRequests()
                 .requestMatchers("/auth/**").permitAll()
-                // TODO add authorization for all the paths and each CRUD method ????
+                .requestMatchers("/questions/all").permitAll()
+                .requestMatchers("/answers/all").permitAll()
+                .requestMatchers("/users/all").permitAll()
                 .requestMatchers("/users/**").hasAnyAuthority("USER", "MODERATOR")
                 .requestMatchers("/answers/**").hasAnyAuthority("USER", "MODERATOR")
                 .requestMatchers("/questions/**").hasAnyAuthority("USER", "MODERATOR")

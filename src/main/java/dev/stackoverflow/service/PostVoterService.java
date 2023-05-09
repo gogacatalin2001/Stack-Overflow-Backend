@@ -1,7 +1,6 @@
 package dev.stackoverflow.service;
 
 import dev.stackoverflow.model.PostVoter;
-import dev.stackoverflow.model.User;
 import dev.stackoverflow.repository.PostVoterRepository;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -28,4 +27,5 @@ public class PostVoterService {
     public void deleteAllByPostId(@NonNull Long postId) {
         postVoterRepository.deleteAllByPostId(postId);
     }
+
 }

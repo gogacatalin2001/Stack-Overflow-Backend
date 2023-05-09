@@ -24,7 +24,7 @@ public class AuthenticationService {
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .phoneNumber(request.getPhoneNumber())
-                .score(0)
+                .score(0.0)
                 .banned(false)
                 .role(request.getRole())
                 .build();

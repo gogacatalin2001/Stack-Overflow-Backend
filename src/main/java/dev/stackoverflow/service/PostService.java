@@ -1,9 +1,6 @@
 package dev.stackoverflow.service;
 
-import dev.stackoverflow.exception.AnswerNotFoundException;
-import dev.stackoverflow.exception.QuestionNotFoundException;
-import dev.stackoverflow.exception.UserAlreadyVotedException;
-import dev.stackoverflow.exception.UserNotFoundException;
+import dev.stackoverflow.exception.*;
 import dev.stackoverflow.model.*;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -50,69 +47,106 @@ public class PostService {
     }
 
     public QuestionTagWrapper saveQuestion(@NonNull Question question, @NonNull List<Tag> tags, @NonNull Long userId) {
-        User user = userService.getUserById(userId);
-        if (user != null) {
-            question.setUser(user);
-            question.setVoteCount(0);
-            Question savedQuestion = questionService.saveQuestion(question);
-            for (Tag tag : tags) {
-                QuestionTag questionTag;
-                if (tagService.existsByText(tag.getText())) {
-                    questionTag = new QuestionTag(savedQuestion, tagService.getByText(tag.getText()));
-                } else {
-                    questionTag = new QuestionTag(savedQuestion, tagService.saveTag(tag));
+        if (!question.getText().isEmpty() && !question.getTitle().isEmpty() && !tags.isEmpty()) {
+            User user = userService.getUserById(userId);
+            if (user != null) {
+                question.setUser(user);
+                question.setVoteCount(0);
+                Question savedQuestion = questionService.saveQuestion(question);
+                for (Tag tag : tags) {
+                    QuestionTag questionTag;
+                    if (tagService.existsByText(tag.getText())) {
+                        questionTag = new QuestionTag(savedQuestion, tagService.getByText(tag.getText()));
+                    } else {
+                        questionTag = new QuestionTag(savedQuestion, tagService.saveTag(tag));
+                    }
+                    questionTagService.save(questionTag);
                 }
-                questionTagService.save(questionTag);
+                questionService.updateQuestion(savedQuestion, savedQuestion.getId());
+                return getQuestionTagWrapper(savedQuestion.getId());
+            } else {
+                throw new UserNotFoundException(userId);
             }
-            questionService.updateQuestion(savedQuestion, savedQuestion.getId());
-            return getQuestionTagWrapper(savedQuestion.getId());
         } else {
-            throw new UserNotFoundException(userId);
+            throw new EmptyQuestionFieldsException(question.getId());
         }
     }
 
-    public QuestionTagWrapper updateQuestion(@NonNull Question question, @NonNull Long questionId) {
-        Question oldQuestion = questionService.getQuestion(questionId);
-        if (oldQuestion != null) {
-            List<Answer> answers = oldQuestion.getAnswers();
-            for (Answer answer : answers) {
-                question.addAnswer(answer);
-                answer.setQuestion(question);
+    public Question updateQuestion(@NonNull QuestionTagWrapper questionTagWrapper, @NonNull Long questionId, @NonNull Long userId) {
+        Question question = questionTagWrapper.getQuestion();
+        List<Tag> tags = questionTagWrapper.getTags();
+        if (!question.getText().isEmpty() && !question.getTitle().isEmpty() && !tags.isEmpty()) {
+            User user = userService.getUserById(userId);
+            if (user != null) {
+                Question oldQuestion = questionService.getQuestion(questionId);
+                if (oldQuestion != null) {
+                    question.setUser(user);
+                    List<Answer> answers = oldQuestion.getAnswers();
+                    List<QuestionTag> questionTags = questionTagService.getAllByQuestionId(questionId);
+                    for (Answer answer : answers) {
+                        answer.setQuestion(question);
+                    }
+                    tagService.saveTags(tags);
+                    for (Tag tag : tags) {
+                        questionTagService.save(new QuestionTag(question, tag));
+                    }
+                    Question newQuestion = questionService.updateQuestion(question, questionId);
+                    for (QuestionTag questionTag : questionTags) {
+                        questionTag.setQuestion(newQuestion);
+                        questionTagService.save(questionTag);
+                    }
+                    return newQuestion;
+                } else {
+                    throw new QuestionNotFoundException(questionId);
+                }
+            } else {
+                throw new UserNotFoundException(userId);
             }
-            questionService.updateQuestion(question, questionId);
-            List<QuestionTag> questionTags = questionTagService.getAllByQuestionId(questionId);
-            for (QuestionTag questionTag : questionTags) {
-                questionTag.setQuestion(question);
-                questionTagService.save(questionTag);
-            }
-            return getQuestionTagWrapper(questionId);
         } else {
-            throw new QuestionNotFoundException(questionId);
+            throw new EmptyQuestionFieldsException(questionId);
         }
     }
 
-    public QuestionTagWrapper updateQuestionVotes(@NonNull Long questionId, @NonNull Long userId, @NonNull Integer amount) {
+    public Question updateQuestionVotes(@NonNull Long questionId, @NonNull Long userId, @NonNull Integer amount) {
         Question question = questionService.getQuestion(questionId);
         if (question != null) {
             User user = userService.getUserById(userId);
             if (user != null) {
-                List<PostVoter> postVotes = postVoterService.getAllByPostId(questionId);
-                List<PostVoter> userVotes = postVotes.stream().filter(vote -> vote.getUser().equals(user)).toList();
-                if (userVotes.isEmpty()) {
-                    postVoterService.save(new PostVoter(question, user));
-                    int voteCount = question.getVoteCount();
-                    question.setVoteCount(amount + voteCount);
-                    questionService.updateQuestion(question, questionId);
+                if (!user.equals(question.getUser())) {
+                    List<PostVoter> postVotes = postVoterService.getAllByPostId(questionId);
+                    boolean alreadyVoted = false;
+                    for (PostVoter postVoter : postVotes) {
+                        if (postVoter.getUser().equals(user)) {
+                            alreadyVoted = true;
+                            break;
+                        }
+                    }
+                    if (!alreadyVoted) {
+                        PostVoter postVoter = new PostVoter(question, user);
+                        if (amount == 1) {
+                            postVoterService.save(postVoter);
+                            userService.updateUserScore(userId, 2.5);
+                            question.setVoteCount(amount + question.getVoteCount());
+                            return questionService.updateQuestion(question, questionId);
+                        } else if (amount == -1) {
+                            postVoterService.save(postVoter);
+                            userService.updateUserScore(userId, -1.5);
+                            question.setVoteCount(amount + question.getVoteCount());
+                            return questionService.updateQuestion(question, questionId);
+                        }
+                    } else {
+                        throw new UserAlreadyVotedException(userId);
+                    }
                 } else {
-                    throw new UserAlreadyVotedException(userId);
+                    throw new AuthorVotedOwnPostException(questionId);
                 }
-                return getQuestionTagWrapper(questionId);
             } else {
                 throw new UserNotFoundException(userId);
             }
         } else {
             throw new QuestionNotFoundException(questionId);
         }
+        return question;
     }
 
     public void deleteQuestion(@NonNull Long questionId) {
@@ -154,26 +188,31 @@ public class PostService {
     }
 
     public Answer saveAnswer(@NonNull Answer answer, @NonNull Long questionId, @NonNull Long userId) {
-        Question question = questionService.getQuestion(questionId);
-        if (question != null) {
-            User user = userService.getUserById(userId);
-            if (user != null) {
-                answer.setUser(user);
-                answer.setVoteCount(0);
-                answer.setQuestion(question);
-                Answer savedAnswer = answerService.saveAnswer(answer);
-                question.addAnswer(savedAnswer);
-                questionService.updateQuestion(question, questionId);
-                return savedAnswer;
+        if (!answer.getText().isEmpty()) {
+
+            Question question = questionService.getQuestion(questionId);
+            if (question != null) {
+                User user = userService.getUserById(userId);
+                if (user != null) {
+                    answer.setUser(user);
+                    answer.setVoteCount(0);
+                    answer.setQuestion(question);
+                    Answer savedAnswer = answerService.saveAnswer(answer);
+                    question.addAnswer(savedAnswer);
+                    questionService.updateQuestion(question, questionId);
+                    return savedAnswer;
+                } else {
+                    throw new UserNotFoundException(userId);
+                }
             } else {
-                throw new UserNotFoundException(userId);
+                throw new QuestionNotFoundException(questionId);
             }
         } else {
-            throw new QuestionNotFoundException(questionId);
+            throw new EmptyAnswerFieldsException(questionId);
         }
     }
 
-    public Answer updateAnswer(@NonNull Answer newAnswer, @NonNull Long answerId, @NonNull Long questionId, @NonNull Long userId) {
+    public Answer updateAnswer(@NonNull Answer newAnswer, @NonNull Long questionId, @NonNull Long answerId, @NonNull Long userId) {
         Question question = questionService.getQuestion(questionId);
         if (question != null) {
             Answer oldAnswer = answerService.getAnswer(answerId);
@@ -198,27 +237,48 @@ public class PostService {
         }
     }
 
-    public Answer updateAnswerVotes(@NonNull Long answerId, @NonNull Long userId, @NonNull Integer amount) {
-        Answer answer = answerService.getAnswer(answerId);
-        if (answer != null) {
-            User user = userService.getUserById(userId);
-            if (user != null) {
-                List<PostVoter> postVotes = postVoterService.getAllByPostId(answerId);
-                List<PostVoter> userVotes = postVotes.stream().filter(vote -> vote.getUser().equals(user)).toList();
-                if (userVotes.isEmpty()) {
-                    postVoterService.save(new PostVoter(answer, user));
-                    int voteCount = answer.getVoteCount();
-                    answer.setVoteCount(amount + voteCount);
-                    answerService.updateAnswer(answer, answerId);
+    public Answer updateAnswerVotes(@NonNull Long questionId, @NonNull Long answerId, @NonNull Long userId, @NonNull Integer amount) {
+        Question question = questionService.getQuestion(questionId);
+        if (question != null) {
+            Answer answer = answerService.getAnswer(answerId);
+            if (answer != null) {
+                User user = userService.getUserById(userId);
+                if (user != null) {
+                    if (!user.equals(answer.getUser())) {
+                        List<PostVoter> postVotes = postVoterService.getAllByPostId(answerId);
+                        boolean alreadyVoted = false;
+                        for (PostVoter postVoter : postVotes) {
+                            if (postVoter.getUser().equals(user)) {
+                                alreadyVoted = true;
+                                break;
+                            }
+                        }
+                        if (!alreadyVoted) {
+                            PostVoter postVoter = new PostVoter(answer, user);
+                            if (amount == 1) {
+                                postVoterService.save(postVoter);
+                                userService.updateUserScore(userId, 5.0);
+                                answer.setVoteCount(amount + answer.getVoteCount());
+                                answerService.updateAnswer(answer, answerId);
+                            } else if (amount == -1) {
+                                postVoterService.save(postVoter);
+                                userService.updateUserScore(userId, -2.5);
+                                answer.setVoteCount(amount + answer.getVoteCount());
+                                answerService.updateAnswer(answer, answerId);
+                            }
+                        } else {
+                            throw new UserAlreadyVotedException(userId);
+                        }
+                    }
+                    return answer;
                 } else {
-                    throw new UserAlreadyVotedException(userId);
+                    throw new UserNotFoundException(userId);
                 }
-                return answer;
             } else {
-                throw new UserNotFoundException(userId);
+                throw new AnswerNotFoundException(answerId);
             }
         } else {
-            throw new AnswerNotFoundException(answerId);
+            throw new QuestionNotFoundException(questionId);
         }
     }
 
@@ -242,8 +302,8 @@ public class PostService {
         Question question = questionService.getQuestion(questionId);
         List<QuestionTag> questionTags = questionTagService.getAllByQuestionId(question.getId());
         List<Tag> tags = new ArrayList<>();
-        for (QuestionTag qt : questionTags) {
-            tags.add(qt.getTag());
+        for (QuestionTag questionTag : questionTags) {
+            tags.add(questionTag.getTag());
         }
         return new QuestionTagWrapper(question, tags);
     }

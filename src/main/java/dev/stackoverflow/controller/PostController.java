@@ -44,16 +44,17 @@ public class PostController {
 
     @PutMapping("/questions")
     @ResponseBody
-    public QuestionTagWrapper updateQuestion(
-            @NonNull @RequestBody Question question,
-            @NonNull @RequestParam("question_id") Long questionId
+    public Question updateQuestion(
+            @NonNull @RequestBody QuestionTagWrapper questionTagWrapper,
+            @NonNull @RequestParam("question_id") Long questionId,
+            @NonNull @RequestParam("user_id") Long userId
     ) {
-        return postService.updateQuestion(question, questionId);
+        return postService.updateQuestion(questionTagWrapper, questionId, userId);
     }
 
-    @PutMapping("/questions/votes")
+    @PatchMapping("/questions/votes")
     @ResponseBody
-    public QuestionTagWrapper updateQuestionVotes(
+    public Question updateQuestionVotes(
             @NonNull @RequestParam("question_id") Long questionId,
             @NonNull @RequestParam("user_id") Long userId,
             @NonNull @RequestParam("vote") Integer vote
@@ -96,22 +97,23 @@ public class PostController {
     @ResponseBody
     public Answer updateAnswer(
             @NonNull @RequestBody Answer answer,
-            @NonNull @RequestParam("answer_id") Long answerId,
             @NonNull @RequestParam("question_id") Long questionId,
+            @NonNull @RequestParam("answer_id") Long answerId,
             @NonNull @RequestParam("user_id") Long userId
     ) {
-        return postService.updateAnswer(answer, answerId, questionId, userId);
+        return postService.updateAnswer(answer, questionId, answerId, userId);
     }
 
-    @PutMapping("/answers/votes")
+    @PatchMapping("/answers/votes")
     @ResponseBody
     public Answer updateAnswerVotes(
+            @NonNull @RequestParam("question_id") Long questionId,
             @NonNull @RequestParam("answer_id") Long answerId,
             @NonNull @RequestParam("user_id") Long userId,
             @NonNull @RequestParam("vote") Integer vote
 
     ) {
-        return postService.updateAnswerVotes(answerId, userId, vote);
+        return postService.updateAnswerVotes(questionId, answerId, userId, vote);
     }
 
     @DeleteMapping("/answers")

@@ -35,8 +35,20 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User updateUser(@NonNull User user, @NonNull Long id) {
+    public User updateUser( @NonNull Long id, @NonNull User user) {
+        user.setUserId(id);
         return userRepository.save(user);
+    }
+
+    public User updateUserScore(@NonNull Long id, @NonNull Double amount) {
+        Optional<User> oldUser = userRepository.findById(id);
+        if (oldUser.isPresent()) {
+            User newUser = oldUser.get();
+            newUser.setScore(newUser.getScore() + amount);
+            return userRepository.save(newUser);
+        } else {
+            throw new UserNotFoundException(id);
+        }
     }
 
     public void deleteUser(@NonNull Long id) {

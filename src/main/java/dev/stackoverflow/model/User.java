@@ -31,14 +31,14 @@ public class User implements UserDetails {
     @Column(name = "phone_number", nullable = false, unique = true)
     private String phoneNumber;
     @Column(name = "score", nullable = false)
-    private int score;
+    private Double score;
     @Column(name = "banned",nullable = false)
     private boolean banned;
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    public User(String username, String email, String password, String phoneNumber, int score, boolean banned, Role role) {
+    public User(String username, String email, String password, String phoneNumber, Double score, boolean banned, Role role) {
         this.username = username;
         this.email = email;
         this.password = password;

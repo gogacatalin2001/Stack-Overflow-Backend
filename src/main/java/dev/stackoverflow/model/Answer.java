@@ -10,7 +10,7 @@ import lombok.*;
 @AllArgsConstructor
 @Entity
 @Table
-public class Answer extends Post implements Comparable<Answer> {
+public class Answer extends Post implements Comparable<Answer>{
 
     @JsonIgnore
     @ManyToOne
@@ -19,14 +19,6 @@ public class Answer extends Post implements Comparable<Answer> {
 
     public Answer() {
     }
-
-//    public Answer(String text, byte[] imageData, @NonNull User user) {
-//        super(text, imageData, user);
-//    }
-//
-//    public Answer(Long id, byte[] imageData, String text, Integer voteCount, User user) {
-//        super(id, imageData, text, voteCount, user);
-//    }
 
     @Override
     public int compareTo(Answer a) {

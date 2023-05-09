@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +26,9 @@ public class QuestionService {
     }
 
     public List<Question> getQuestions() {
-        return questionRepository.findAll();
+        List<Question> sortedQuestions = new ArrayList<>(questionRepository.findAll().stream().sorted().toList());
+        Collections.reverse(sortedQuestions);
+        return sortedQuestions;
     }
 
     public Question saveQuestion(@NonNull Question question) {
@@ -35,6 +38,7 @@ public class QuestionService {
     public Question updateQuestion(@NonNull Question question, @NonNull Long id) {
         if (questionRepository.existsById(id)) {
             question.setId(id);
+            // TODO check if answers are updated too
             return questionRepository.save(question);
         } else {
             throw new QuestionNotFoundException(id);

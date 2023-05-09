@@ -37,8 +37,14 @@ public class UserController {
 
     @PutMapping("/users")
     @ResponseBody
-    public User updateUser(@NonNull @RequestBody User user, @NonNull @RequestParam("user-id") Long userId) {
-        return userService.updateUser(user, userId);
+    public User updateUser(@NonNull @RequestParam("user-id") Long userId, @NonNull @RequestBody User user) {
+        return userService.updateUser(userId, user);
+    }
+
+    @PutMapping("/users/score")
+    @ResponseBody
+    public User updateUserScore(@NonNull @RequestParam("user-id") Long userId, @NonNull @RequestBody Double amount) {
+        return userService.updateUserScore(userId, amount);
     }
 
     @DeleteMapping("/users")
