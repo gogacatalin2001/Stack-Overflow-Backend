@@ -1,5 +1,6 @@
 package dev.stackoverflow.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -20,61 +21,71 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id", nullable = false, unique = true)
+    @Column(name = "user_id")
     private Long userId;
-    @Column(name = "username", nullable = false, unique = true)
+    @Column(name = "username")
     private String username;
-    @Column(name = "email", nullable = false, unique = true)
+    @Column(name = "email")
     private String email;
-    @Column(name = "password", nullable = false)
+    @Column(name = "password")
     private String password;
-    @Column(name = "phone_number", nullable = false, unique = true)
+    @Column(name = "phone_number")
     private String phoneNumber;
-    @Column(name = "score", nullable = false)
+    @Column(name = "score")
     private Double score;
-    @Column(name = "banned",nullable = false)
+    @Column(name = "banned")
     private boolean banned;
-    @Column(nullable = false)
+    @Column(name = "role")
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    public User(String username, String email, String password, String phoneNumber, Double score, boolean banned, Role role) {
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.phoneNumber = phoneNumber;
-        this.score = score;
-        this.banned = banned;
-        this.role = role;
-    }
-
+    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
+    @JsonIgnore
     @Override
     public String getPassword() {
         return password;
     }
 
+    @JsonIgnore
     @Override
     public boolean isAccountNonExpired() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "userId=" + userId +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", score=" + score +
+                ", banned=" + banned +
+                ", role=" + role +
+                '}';
     }
 }

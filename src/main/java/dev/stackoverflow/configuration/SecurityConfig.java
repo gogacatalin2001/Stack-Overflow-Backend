@@ -18,7 +18,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-@Configuration @EnableWebSecurity @EnableMethodSecurity
+@Configuration
+@EnableWebSecurity
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -26,7 +28,7 @@ public class SecurityConfig {
     private final UserService userService;
 
     @Bean
-    public SecurityFilterChain securityFilterChain (HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors()
                 .and()
@@ -36,6 +38,7 @@ public class SecurityConfig {
                 .requestMatchers("/questions/all").permitAll()
                 .requestMatchers("/answers/all").permitAll()
                 .requestMatchers("/users/all").permitAll()
+                .requestMatchers("/tags/all").permitAll()
                 .requestMatchers("/users/**").hasAnyAuthority("USER", "MODERATOR")
                 .requestMatchers("/answers/**").hasAnyAuthority("USER", "MODERATOR")
                 .requestMatchers("/questions/**").hasAnyAuthority("USER", "MODERATOR")

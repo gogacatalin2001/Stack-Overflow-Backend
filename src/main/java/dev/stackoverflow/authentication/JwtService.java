@@ -49,7 +49,7 @@ public class JwtService {
                 .claim("banned", user.isBanned())
                 .claim("role", user.getRole())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // one hour
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

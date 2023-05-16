@@ -1,5 +1,6 @@
 package dev.stackoverflow.service;
 
+import dev.stackoverflow.exception.QuestionNotFoundException;
 import dev.stackoverflow.model.Answer;
 import dev.stackoverflow.repository.AnswerRepository;
 import lombok.NonNull;
@@ -11,34 +12,37 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-@Service @Transactional @RequiredArgsConstructor
+@Service
+@Transactional
+@RequiredArgsConstructor
 public class AnswerService {
 
     @Autowired
     private final AnswerRepository answerRepository;
 
-    public Answer getAnswer(@NonNull Long id) {
+    public Answer get(@NonNull Long id) {
         Optional<Answer> answer = answerRepository.findById(id);
         return answer.orElse(null);
     }
 
-    public List<Answer> getAnswers() {
+    public List<Answer> getAll() {
         return answerRepository.findAll();
     }
 
-    public Answer saveAnswer(@NonNull Answer answer) {
+    public Answer save(@NonNull Answer answer) {
         return answerRepository.save(answer);
     }
 
-    public List<Answer> saveAnswers(@NonNull List<Answer> answers) {
-        return answerRepository.saveAll(answers);
+    public Answer update(@NonNull Answer answer, @NonNull Long id) {
+        if (answerRepository.existsById(id)) {
+            answer.setId(id);
+            return answerRepository.save(answer);
+        } else {
+            throw new QuestionNotFoundException(id);
+        }
     }
 
-    public Answer updateAnswer(@NonNull Answer answer, @NonNull Long id) {
-        return answerRepository.save(answer);
-    }
-
-    public void deleteAnswer(@NonNull Long id) {
+    public void delete(@NonNull Long id) {
         answerRepository.deleteById(id);
     }
 }

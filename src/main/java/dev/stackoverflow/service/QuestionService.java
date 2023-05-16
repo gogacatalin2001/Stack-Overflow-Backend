@@ -9,10 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service @Transactional @RequiredArgsConstructor
 public class QuestionService {
@@ -20,32 +17,31 @@ public class QuestionService {
     @Autowired
     private final QuestionRepository questionRepository;
 
-    public Question getQuestion(@NonNull Long id) {
+    public Question get(@NonNull Long id) {
         Optional<Question> question = questionRepository.findById(id);
         return question.orElse(null);
     }
 
-    public List<Question> getQuestions() {
+    public List<Question> getAll() {
         List<Question> sortedQuestions = new ArrayList<>(questionRepository.findAll().stream().sorted().toList());
         Collections.reverse(sortedQuestions);
         return sortedQuestions;
     }
 
-    public Question saveQuestion(@NonNull Question question) {
+    public Question save(@NonNull Question question) {
         return questionRepository.save(question);
     }
 
-    public Question updateQuestion(@NonNull Question question, @NonNull Long id) {
+    public Question update(@NonNull Question question, @NonNull Long id) {
         if (questionRepository.existsById(id)) {
             question.setId(id);
-            // TODO check if answers are updated too
             return questionRepository.save(question);
         } else {
             throw new QuestionNotFoundException(id);
         }
     }
 
-    public void deleteQuestion(@NonNull Long id) {
+    public void delete(@NonNull Long id) {
         Optional<Question> question = questionRepository.findById(id);
         if (question.isPresent()) {
             questionRepository.deleteById(question.get().getId());

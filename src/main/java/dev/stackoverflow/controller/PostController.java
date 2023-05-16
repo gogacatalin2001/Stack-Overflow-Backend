@@ -1,13 +1,14 @@
 package dev.stackoverflow.controller;
 
 import dev.stackoverflow.model.Answer;
-import dev.stackoverflow.model.Question;
-import dev.stackoverflow.model.QuestionTagWrapper;
+import dev.stackoverflow.model.QuestionWrapper;
 import dev.stackoverflow.service.PostService;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 
@@ -21,13 +22,13 @@ public class PostController {
 
     @GetMapping("/questions/all")
     @ResponseBody
-    public List<QuestionTagWrapper> getAll() {
+    public List<QuestionWrapper> getAll() {
         return postService.getQuestions();
     }
 
     @GetMapping("/questions")
     @ResponseBody
-    public QuestionTagWrapper getQuestion(
+    public QuestionWrapper getQuestion(
             @NonNull @RequestParam("question_id") Long questionId
     ) {
         return postService.getQuestion(questionId);
@@ -35,26 +36,28 @@ public class PostController {
 
     @PostMapping("/questions")
     @ResponseBody
-    public QuestionTagWrapper saveQuestion(
-            @NonNull @RequestBody QuestionTagWrapper wrapper,
+    public QuestionWrapper saveQuestion(
+            @NonNull @RequestBody QuestionWrapper wrapper,
+            @RequestParam("image_id") Long imageId,
             @NonNull @RequestParam("user_id") Long userId
     ) {
-        return postService.saveQuestion(wrapper.getQuestion(), wrapper.getTags(), userId);
+        return postService.saveQuestion(wrapper.getQuestion(), wrapper.getTags(), userId, imageId);
     }
 
     @PutMapping("/questions")
     @ResponseBody
-    public Question updateQuestion(
-            @NonNull @RequestBody QuestionTagWrapper questionTagWrapper,
+    public QuestionWrapper updateQuestion(
+            @NonNull @RequestBody QuestionWrapper questionWrapper,
             @NonNull @RequestParam("question_id") Long questionId,
-            @NonNull @RequestParam("user_id") Long userId
-    ) {
-        return postService.updateQuestion(questionTagWrapper, questionId, userId);
+            @NonNull @RequestParam("user_id") Long userId,
+            @RequestParam("image_id") Long imageId
+    ) throws IOException {
+        return postService.updateQuestion(questionWrapper, imageId, questionId, userId);
     }
 
     @PatchMapping("/questions/votes")
     @ResponseBody
-    public Question updateQuestionVotes(
+    public QuestionWrapper updateQuestionVotes(
             @NonNull @RequestParam("question_id") Long questionId,
             @NonNull @RequestParam("user_id") Long userId,
             @NonNull @RequestParam("vote") Integer vote
@@ -87,21 +90,24 @@ public class PostController {
     @ResponseBody
     public Answer saveAnswer(
             @NonNull @RequestBody Answer answer,
+            @RequestParam("image_id") Long imageId,
             @NonNull @RequestParam("question_id") Long questionId,
             @NonNull @RequestParam("user_id") Long userId
     ) {
-        return postService.saveAnswer(answer, questionId, userId);
+        return postService.saveAnswer(answer, imageId, questionId, userId);
     }
 
     @PutMapping("/answers")
     @ResponseBody
     public Answer updateAnswer(
+            // todo maybe a wrapper will be needed
             @NonNull @RequestBody Answer answer,
+            @RequestParam("image_id") Long imageId,
             @NonNull @RequestParam("question_id") Long questionId,
             @NonNull @RequestParam("answer_id") Long answerId,
             @NonNull @RequestParam("user_id") Long userId
     ) {
-        return postService.updateAnswer(answer, questionId, answerId, userId);
+        return postService.updateAnswer(answer, imageId, questionId, answerId, userId);
     }
 
     @PatchMapping("/answers/votes")
@@ -119,14 +125,9 @@ public class PostController {
     @DeleteMapping("/answers")
     public void deleteAnswer(
             @NonNull @RequestParam("question_id") Long questionId,
-            @NonNull @RequestParam("answer_id") Long answerId
+            @NonNull @RequestParam("answer_id") Long answerId,
+            @NonNull @RequestParam("user_id") Long userId
     ) {
-        postService.deleteAnswer(questionId, answerId);
-    }
-
-    @GetMapping("/questions/answers")
-    @ResponseBody
-    public List<Answer> getAnswersByQuestionId(@NonNull @RequestParam("question_id") Long questionId) {
-        return postService.getAnswersByQuestionId(questionId);
+        postService.deleteAnswer(questionId, answerId, userId);
     }
 }

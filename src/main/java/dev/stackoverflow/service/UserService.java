@@ -12,7 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-@Service @RequiredArgsConstructor @Transactional
+@Service
+@RequiredArgsConstructor
+@Transactional
 public class UserService {
 
     @Autowired
@@ -35,9 +37,15 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User updateUser( @NonNull Long id, @NonNull User user) {
-        user.setUserId(id);
-        return userRepository.save(user);
+    public User updateUser(@NonNull Long id, @NonNull User user) {
+        Optional<User> oldUser = userRepository.findById(id);
+        if (oldUser.isPresent()) {
+            user.setUserId(id);
+            user.setPassword(oldUser.get().getPassword());
+            return userRepository.save(user);
+        } else {
+            throw new UserNotFoundException(id);
+        }
     }
 
     public User updateUserScore(@NonNull Long id, @NonNull Double amount) {

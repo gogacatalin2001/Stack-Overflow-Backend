@@ -23,12 +23,6 @@ public class UserController {
         return userService.getUsers();
     }
 
-//    @GetMapping("/users")
-//    @ResponseBody
-//    public User getUserById(@RequestParam("user-id") Long userId) {
-//        return userService.getUserById(userId);
-//    }
-
     @GetMapping("/users")
     @ResponseBody
     public User getUserByUsername(@RequestParam("username") String username) {
@@ -37,18 +31,18 @@ public class UserController {
 
     @PutMapping("/users")
     @ResponseBody
-    public User updateUser(@NonNull @RequestParam("user-id") Long userId, @NonNull @RequestBody User user) {
+    public User updateUser(@NonNull @RequestParam("user_id") Long userId, @NonNull @RequestBody User user) {
         return userService.updateUser(userId, user);
     }
 
     @PutMapping("/users/score")
     @ResponseBody
-    public User updateUserScore(@NonNull @RequestParam("user-id") Long userId, @NonNull @RequestBody Double amount) {
+    public User updateUserScore(@NonNull @RequestParam("user_id") Long userId, @NonNull @RequestBody Double amount) {
         return userService.updateUserScore(userId, amount);
     }
 
     @DeleteMapping("/users")
-    public void deleteUserById(@NonNull @RequestParam("user-id") Long userId) {
+    public void deleteUserById(@NonNull @RequestParam("user_id") Long userId) {
         userService.deleteUser(userId);
     }
 

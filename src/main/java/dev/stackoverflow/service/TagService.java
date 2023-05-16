@@ -11,30 +11,27 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-@Service @Transactional @RequiredArgsConstructor
+@Service
+@Transactional
+@RequiredArgsConstructor
 public class TagService {
 
     @Autowired
     private final TagRepository tagRepository;
 
-    public Tag getTagById(@NonNull Long id) {
+    public Tag getById(@NonNull Long id) {
         Optional<Tag> tag = tagRepository.findById(id);
         return tag.orElse(null);
     }
 
-    public Tag getByText(@NonNull String text) {
-        return tagRepository.findByText(text);
-    }
-
-    public boolean existsByText(@NonNull String text) {
-        return tagRepository.existsByText(text);
-    }
-
-    public List<Tag> getTags() {
+    public List<Tag> getAll() {
         return tagRepository.findAll();
     }
 
-    public Tag saveTag(@NonNull Tag tag) {
+    public Tag save(@NonNull Tag tag) {
+        if (tagRepository.existsByText(tag.getText())) {
+            return tagRepository.findByText(tag.getText());
+        }
         return tagRepository.save(tag);
     }
 
@@ -42,11 +39,11 @@ public class TagService {
         return tagRepository.saveAll(tags);
     }
 
-    public Tag updateTag(@NonNull Tag tag) {
+    public Tag update(@NonNull Tag tag) {
         return tagRepository.save(tag);
     }
 
-    public void deleteTag(@NonNull Long id) {
+    public void delete(@NonNull Long id) {
         tagRepository.deleteById(id);
     }
 }
