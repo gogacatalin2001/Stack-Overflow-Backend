@@ -1,5 +1,6 @@
 package dev.stackoverflow.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,6 +23,7 @@ public class Image {
     private String name;
     @Column
     private String type;
+//    @JsonIgnore
     @Lob
     @Column(nullable = false)
     private byte[] imageData;

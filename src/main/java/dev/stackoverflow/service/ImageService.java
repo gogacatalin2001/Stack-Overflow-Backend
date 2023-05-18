@@ -38,15 +38,16 @@ public class ImageService {
 
     public Image getById(@NonNull Long id) {
         Optional<Image> image = imageRepository.findById(id);
-        Image decompressedImage = new Image();
-        image.ifPresent(img -> {
+        if (image.isPresent()) {
+            Image decompressedImage = new Image();
             byte[] imageData = ImageUtil.decompressImage(image.get().getImageData());
             decompressedImage.setId(id);
-            decompressedImage.setName(img.getName());
-            decompressedImage.setType(img.getType());
+            decompressedImage.setName(image.get().getName());
+            decompressedImage.setType(image.get().getType());
             decompressedImage.setImageData(imageData);
-        });
-        return decompressedImage;
+            return decompressedImage;
+        }
+        return null;
     }
 
     public void delete(Image image) {

@@ -27,14 +27,17 @@ public class ImageController {
         return imageService.save(image).getId();
     }
 
-    @GetMapping(value = "/images")
-    public ResponseEntity<?> getImage(@RequestParam("image_id") @NonNull Long imageId
+    @GetMapping(value = "/images/image-data")
+    public ResponseEntity<?> getImageData(@RequestParam("image_id") @NonNull Long imageId
     ) {
         Image image = imageService.getById(imageId);
+        if (image != null) {
         return ResponseEntity
                 .status(200)
                 .contentType(MediaType.valueOf(image.getType()))
                 .body(image.getImageData());
+        }
+        return ResponseEntity.status(404).body("Image not found");
     }
 
     @DeleteMapping("/images")
