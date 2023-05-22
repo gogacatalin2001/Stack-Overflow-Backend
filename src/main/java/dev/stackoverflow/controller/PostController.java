@@ -26,7 +26,7 @@ public class PostController {
         return postService.getQuestions();
     }
 
-    @GetMapping("/questions")
+    @GetMapping("/questions/get")
     @ResponseBody
     public QuestionWrapper getQuestion(
             @NonNull @RequestParam("question_id") Long questionId

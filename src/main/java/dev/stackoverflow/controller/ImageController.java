@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -20,14 +21,14 @@ public class ImageController {
     @Autowired
     private final ImageService imageService;
 
-    @PostMapping(value = "/images")
+    @PostMapping( "/images")
     @ResponseBody
     public Long saveImage(
             @RequestParam("image") MultipartFile image) throws IOException {
         return imageService.save(image).getId();
     }
 
-    @GetMapping(value = "/images/image-data")
+    @GetMapping("/images/image-data")
     public ResponseEntity<?> getImageData(@RequestParam("image_id") @NonNull Long imageId
     ) {
         Image image = imageService.getById(imageId);

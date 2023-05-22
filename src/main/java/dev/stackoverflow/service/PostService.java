@@ -152,9 +152,6 @@ public class PostService {
     public void deleteQuestion(@NonNull Long questionId) {
         Question question = questionService.get(questionId);
         if (question != null) {
-            if (question.getImage() != null) {
-                imageService.delete(question.getImage());
-            }
             List<Answer> answers = question.getAnswers();
             for (Answer answer : answers) {
                 answerService.delete(answer.getId());
@@ -299,7 +296,6 @@ public class PostService {
                 User user = userService.getUserById(userId);
                 if (user != null) {
                     if (user.equals(answer.getUser()) || user.getRole().equals(Role.MODERATOR)) {
-                        imageService.delete(answer.getImage());
                         question.deleteAnswer(answer);
                         answerService.delete(answerId);
                         questionService.update(question, questionId);
